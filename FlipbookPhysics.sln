@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlipbookCollision", "FlipbookCollision.csproj", "{96475714-2E19-4A1A-A062-301BC7334970}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlipbookPhysics", "FlipbookPhysics.csproj", "{96475714-2E19-4A1A-A062-301BC7334970}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

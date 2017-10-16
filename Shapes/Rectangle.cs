@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 
-namespace FlipbookCollision.Shapes
+namespace FlipbookPhysics.Shapes
 {
     public class FBRectangle : Shape
     {

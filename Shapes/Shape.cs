@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FlipbookCollision
+namespace FlipbookPhysics
 { 
     public abstract class Shape
     {
