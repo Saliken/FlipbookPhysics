@@ -45,6 +45,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ColliderChecker.cs" />
+    <Compile Include="FBBody.cs" />
+    <Compile Include="FBEngine.cs" />
     <Compile Include="Shapes\FBCircle.cs" />
     <Compile Include="Shapes\FBPolygon.cs" />
     <Compile Include="Shapes\Line.cs" />
