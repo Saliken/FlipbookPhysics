@@ -83,7 +83,7 @@ namespace FlipbookPhysics
                     willIntersect = false;
 
                 if (!intersecting && !willIntersect)
-                    break;
+                    return false;
 
 
                 if ((intervalDistance = Math.Abs(intervalDistance)) < mtvDistance)

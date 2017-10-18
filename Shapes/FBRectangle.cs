@@ -9,9 +9,9 @@ namespace FlipbookPhysics
 {
     public class FBRectangle : FBShape
     {
-        Vector2 Position;
-        float width;
-        float height;
+        public Vector2 Position;
+        public float width;
+        public float height;
 
         public List<FBLine> Lines
         {
