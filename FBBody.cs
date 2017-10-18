@@ -6,11 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FlipbookCollision
+namespace FlipbookPhysics
 {
     public class FBBody
     {
-        public List<Shape> colliders;
+        public List<FBShape> colliders;
         public Vector2 position;
         public float rotation;
         public Rectangle AABB;
@@ -19,7 +19,7 @@ namespace FlipbookCollision
 
         private float moveX, moveY;
         public float MoveX { get { return moveX; } }
-        public float MoveY { get; { return moveY; } }
+        public float MoveY { get { return moveY; } }
 
         public FBBody()
         {

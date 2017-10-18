@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FlipbookCollision
+namespace FlipbookPhysics
 {
     class FBQuadTreeNode
     {
@@ -90,10 +90,10 @@ namespace FlipbookCollision
             if (subNodes == null)
             {
                 subNodes = new FBQuadTreeNode[4];
-                subNodes[0] = new FBQuadTreeNode(TopLeftRectangle, level + 1, capacity);
-                subNodes[1] = new FBQuadTreeNode(TopRightRectangle, level + 1, capacity);
-                subNodes[2] = new FBQuadTreeNode(BottomLeftRectangle, level + 1, capacity);
-                subNodes[3] = new FBQuadTreeNode(BottomRightRectangle, level + 1, capacity);
+                subNodes[0] = new FBQuadTreeNode(TopLeftRectangle, level + 1, capacity, maxLevel);
+                subNodes[1] = new FBQuadTreeNode(TopRightRectangle, level + 1, capacity, maxLevel);
+                subNodes[2] = new FBQuadTreeNode(BottomLeftRectangle, level + 1, capacity, maxLevel);
+                subNodes[3] = new FBQuadTreeNode(BottomRightRectangle, level + 1, capacity, maxLevel);
             }
         }
     }

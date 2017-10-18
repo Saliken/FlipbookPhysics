@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FlipbookPhysics
 {
-    public class Line
+    public class FBLine
     {
         public Vector2 StartPosition { get; set; }
         public Vector2 EndPosition { get; set; }
@@ -53,14 +53,14 @@ namespace FlipbookPhysics
             }
         }
 
-        public Line() { }
-        public Line(Vector2 startPosition, Vector2 endPosition)
+        public FBLine() { }
+        public FBLine(Vector2 startPosition, Vector2 endPosition)
         {
             StartPosition = startPosition;
             EndPosition = endPosition;
         }
 
-        public bool Intersects(Line otherLine, out Vector2 intersectionPoint)
+        public bool Intersects(FBLine otherLine, out Vector2 intersectionPoint)
         {
             intersectionPoint = Vector2.Zero;
 

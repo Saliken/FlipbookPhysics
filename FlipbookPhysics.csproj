@@ -53,11 +53,11 @@
     <Compile Include="FBQuadTree.cs" />
     <Compile Include="FBQuadTreeNode.cs" />
     <Compile Include="Shapes\FBCircle.cs" />
+    <Compile Include="Shapes\FBLine.cs" />
     <Compile Include="Shapes\FBPolygon.cs" />
-    <Compile Include="Shapes\Line.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Shapes\Rectangle.cs" />
-    <Compile Include="Shapes\Shape.cs" />
+    <Compile Include="Shapes\FBRectangle.cs" />
+    <Compile Include="Shapes\FBShape.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 
 namespace FlipbookPhysics
 { 
-    public abstract class Shape
+    public abstract class FBShape
     {
         public abstract Vector2 NearestPoint(Vector2 to);
-        public abstract List<Vector2> CollisionAxes(Shape shapeToCheckAgainst);
+        public abstract List<Vector2> CollisionAxes(FBShape shapeToCheckAgainst);
+
         public abstract void Project(Vector2 axis, out float min, out float max);
+        public abstract void Project(Vector2 axis, out float min, out float max, out float moveMin, out float moveMax, Vector2 movement);
     }
 }

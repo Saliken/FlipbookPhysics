@@ -7,19 +7,19 @@ using System.Threading.Tasks;
 
 namespace FlipbookPhysics
 {
-    public class FBPolygon : Shape
+    public class FBPolygon : FBShape
     {
         public List<Vector2> Points;
-        public List<Line> Lines;
+        public List<FBLine> Lines;
         public Vector2 Position = Vector2.Zero;
 
         public List<Vector2> MovedPoints { get { return new List<Vector2>(Points.Select(x => new Vector2(x.X + Position.X, x.Y + Position.Y))); } }
-        public List<Line> MovedLines { get { return new List<Line>(Lines.Select(x => new Line(x.StartPosition + Position, x.EndPosition + Position))); } }
+        public List<FBLine> MovedLines { get { return new List<FBLine>(Lines.Select(x => new FBLine(x.StartPosition + Position, x.EndPosition + Position))); } }
 
         public FBPolygon()
         {
             Points = new List<Vector2>();
-            Lines = new List<Line>();
+            Lines = new List<FBLine>();
         }
 
         public void AddPoint(float x, float y)
@@ -31,8 +31,8 @@ namespace FlipbookPhysics
                 if (Lines.Count > 0)
                     Lines.Remove(Lines[Lines.Count - 1]);
 
-                Lines.Add(new Line(Points[Points.Count - 2], new Vector2(x, y)));
-                Lines.Add(new Line(new Vector2(x, y), Points[0]));
+                Lines.Add(new FBLine(Points[Points.Count - 2], new Vector2(x, y)));
+                Lines.Add(new FBLine(new Vector2(x, y), Points[0]));
             }
         }
 
@@ -51,15 +51,15 @@ namespace FlipbookPhysics
             }
             return closestPoint;
         }
-        public override List<Vector2> CollisionAxes(Shape otherShape)
+        public override List<Vector2> CollisionAxes(FBShape otherShape)
         {
             return MovedLines.Select(x => x.NormalRight).ToList();
         }
         public override void Project(Vector2 axis, out float min, out float max)
         {
-            float dot = Vector2.Dot(axis, MovedPoints[0]);
-            var minValue = dot;
-            var maxValue = dot;
+            float dot;
+            var minValue = float.MaxValue;
+            var maxValue = float.MinValue;
             foreach (var point in MovedPoints)
             {
                 dot = Vector2.Dot(point, axis);
@@ -71,6 +71,33 @@ namespace FlipbookPhysics
 
             min = minValue;
             max = maxValue;
+        }
+
+        public override void Project(Vector2 axis, out float min, out float max, out float moveMin, out float moveMax, Vector2 movement)
+        {
+            float dot;
+            float minValue = float.MaxValue;
+            float maxValue = float.MinValue;
+            float minMoveValue = float.MaxValue;
+            float maxMoveValue = float.MinValue;
+            foreach (var point in MovedPoints)
+            {
+                dot = Vector2.Dot(point, axis);
+                if (dot < minValue)
+                    minValue = dot;
+                else if (dot > maxValue)
+                    maxValue = dot;
+
+                dot = Vector2.Dot(point + movement, axis);
+                if (dot < minMoveValue)
+                    minMoveValue = dot;
+                else if (dot > maxMoveValue)
+                    maxMoveValue = dot;
+            }
+            min = minValue;
+            max = maxValue;
+            moveMin = minMoveValue;
+            moveMax = maxMoveValue;
         }
     }
 }
