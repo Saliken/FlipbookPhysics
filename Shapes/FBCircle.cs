@@ -10,7 +10,6 @@ namespace FlipbookPhysics
     public class FBCircle : FBShape
     {
         public float Radius { get; set; }
-        public Vector2 Position { get; set; }
 
         public FBCircle(float radius, Vector2 offset)
         {

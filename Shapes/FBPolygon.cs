@@ -11,7 +11,6 @@ namespace FlipbookPhysics
     {
         public List<Vector2> Points;
         public List<FBLine> Lines;
-        public Vector2 Position = Vector2.Zero;
 
         public List<Vector2> MovedPoints { get { return new List<Vector2>(Points.Select(x => new Vector2(x.X + Position.X, x.Y + Position.Y))); } }
         public List<FBLine> MovedLines { get { return new List<FBLine>(Lines.Select(x => new FBLine(x.StartPosition + Position, x.EndPosition + Position))); } }

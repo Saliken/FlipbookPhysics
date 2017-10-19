@@ -9,7 +9,6 @@ namespace FlipbookPhysics
 {
     public class FBRectangle : FBShape
     {
-        public Vector2 Position;
         public float width;
         public float height;
 

@@ -63,6 +63,8 @@ namespace FlipbookPhysics
             float mtvDistance = float.MaxValue;
             bool futureInterval = false;
 
+            var willIntersectCount = 0;
+            var intersectCount = 0;
             foreach (var axis in axes)
             {
                 bool intersecting = true, willIntersect = true;
@@ -83,7 +85,7 @@ namespace FlipbookPhysics
                 intervalDistance = IntervalDistance(aMin, aMax, bMin, bMax);
                 if (intervalDistance > 0)
                     willIntersect = false;
-                
+
                 if(intersecting)
                 {
                     if(futureInterval != true)
@@ -94,13 +96,20 @@ namespace FlipbookPhysics
                             mtvDistance = intervalDistance;
                         }
                     }
+
+                    intersectCount++;
                 }
                 else if(willIntersect)
                 {
                     //If we reach this it means that there did exist an axis of seperation..
                     //..but now there does not, which implies this axis is the axis it collides with..
                     //..so treat this axis as more important (for tunneling prevention).
-                    futureInterval = true;
+                    if(futureInterval == false)
+                    {
+                        futureInterval = true;
+                        mtvDistance = float.MaxValue;
+                    }
+                    willIntersectCount++;
                     if ((intervalDistance = Math.Abs(intervalDistance)) < mtvDistance)
                     {
                         mtv = axis;
@@ -115,7 +124,7 @@ namespace FlipbookPhysics
 
             var collision = new Collision()
             {
-                seperatingVector = mtv * mtvDistance,
+                seperatingVector = ValidateAxis(a.Position - b.Position, mtv) * mtvDistance,
                 collidedWith = b
             };
 
@@ -124,74 +133,12 @@ namespace FlipbookPhysics
             return true;
         }
 
-        public static bool CollidesWith(this FBShape a, FBShape b, Action<Collision> onCollision, Vector2 movement)
+        private static Vector2 ValidateAxis(Vector2 direction, Vector2 axis)
         {
-            var axes = a.CollisionAxes(b);
-            axes.AddRange(b.CollisionAxes(a));
+            if (Vector2.Dot(axis, direction) < 0)
+                return -axis;
 
-            Vector2 mtv = Vector2.Zero;
-            float mtvDistance = float.MaxValue;
-            bool futureInterval = false;
-
-            foreach (var axis in axes)
-            {
-                bool intersecting = true, willIntersect = true;
-                float aMin, aMax, bMin, bMax;
-                a.Project(axis, out aMin, out aMax);
-                b.Project(axis, out bMin, out bMax);
-
-                var intervalDistance = IntervalDistance(aMin, aMax, bMin, bMax);
-                if (intervalDistance > 0)
-                    intersecting = false;
-
-                var movementProjection = Vector2.Dot(movement, axis);
-                if (movementProjection < 0)
-                    aMin += movementProjection;
-                else
-                    aMax += movementProjection;
-
-                intervalDistance = IntervalDistance(aMin, aMax, bMin, bMax);
-                if (intervalDistance > 0)
-                    willIntersect = false;
-
-                if (intersecting)
-                {
-                    if (futureInterval != true)
-                    {
-                        if ((intervalDistance = Math.Abs(intervalDistance)) < mtvDistance)
-                        {
-                            mtv = axis;
-                            mtvDistance = intervalDistance;
-                        }
-                    }
-                }
-                else if (willIntersect)
-                {
-                    //If we reach this it means that there did exist an axis of seperation..
-                    //..but now there does not, which implies this axis is the axis it collides with..
-                    //..so treat this axis as more important (for tunneling prevention).
-                    futureInterval = true;
-                    if ((intervalDistance = Math.Abs(intervalDistance)) < mtvDistance)
-                    {
-                        mtv = axis;
-                        mtvDistance = intervalDistance;
-                    }
-                }
-                else
-                {
-                    return false; //axis of seperation.
-                }
-            }
-
-            var collision = new Collision()
-            {
-                seperatingVector = mtv * mtvDistance,
-                collidedWith = b
-            };
-
-            onCollision?.Invoke(collision);
-
-            return true;
+            return axis;
         }
 
         private static float IntervalDistance(float minA, float maxA, float minB, float maxB)
