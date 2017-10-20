@@ -10,6 +10,8 @@ namespace FlipbookPhysics
     public abstract class FBShape
     {
         public Vector2 Position;
+        public float Rotation;
+
         public abstract Vector2 NearestPoint(Vector2 to);
         public abstract List<Vector2> CollisionAxes(FBShape shapeToCheckAgainst);
 

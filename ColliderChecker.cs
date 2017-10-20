@@ -133,6 +133,115 @@ namespace FlipbookPhysics
             return true;
         }
 
+        public static bool CollidesWith2(this FBShape a, FBShape b, Vector2 movement, out Vector2 validMovement)
+        {
+            validMovement = movement;
+            var axes = a.CollisionAxes(b);
+            axes.AddRange(b.CollisionAxes(a));
+            
+            Vector2 range = new Vector2(float.MinValue, float.MaxValue);
+            foreach(var axis in axes)
+            {
+                float aMin, aMax, bMin, bMax;
+                a.Project(axis, out aMin, out aMax);
+                b.Project(axis, out bMin, out bMax);
+
+                var movementProjection = Vector2.Dot(axis, movement);
+                if(movementProjection < 0)
+                {
+                    var tFirst = aMin + movementProjection;
+                    var tLast = aMax + movementProjection;
+
+                    if (aMax < bMin) //Moving away from a future collision
+                        return false;
+
+                    //determine the aMax point where we begin colliding and end colliding.
+                    float hitFirst, hitLast;
+                    if (tFirst < bMax)
+                    {
+                        if (aMin < bMax)
+                            hitFirst = aMin;
+                        else
+                            hitFirst = bMax;
+                    }
+                    else
+                        return false;
+
+                    if (tLast < bMin)
+                    {
+                        hitLast = bMin - (aMax - aMin);
+                    }
+                    else
+                    {
+                        hitLast = tFirst;
+                    }
+
+                    //determine at what percent of the velocity's movement we are colliding.
+                    var vN = aMin;
+                    var hitFirstP = Math.Abs((hitFirst - vN) / (tFirst - vN));
+                    var hitLastP = Math.Abs((hitLast - vN) / (tFirst - vN));
+
+                    var rangeMin = hitFirstP > range.X ? hitFirstP : range.X;
+                    var rangeMax = hitLastP < range.Y ? hitLastP : range.Y;
+
+                    if (rangeMin > rangeMax)
+                        return false;
+
+                    range = new Vector2(rangeMin, rangeMax);
+                }
+                else
+                {
+                    var tFirst = aMax + movementProjection;
+                    var tLast = aMin + movementProjection;
+
+                    if (aMin > bMax) //Moving away from a future collision
+                        return false;
+
+                    //determine the aMax point where we begin colliding and end colliding.
+                    float hitFirst, hitLast;
+                    if (tFirst > bMin)
+                    {
+                        if (aMax > bMin)
+                            hitFirst = aMax;
+                        else
+                            hitFirst = bMin;
+                    }
+                    else
+                        return false;
+                    
+                    if(tLast > bMax)
+                    {
+                        hitLast = bMax + (aMax - aMin);
+                    }
+                    else
+                    {
+                        hitLast = tFirst;
+                    }
+
+                    //determine at what percent of the velocity's movement we are colliding.
+                    var vN = aMax;
+                    var hitFirstP = Math.Abs((hitFirst - vN) / (tFirst - vN));
+                    var hitLastP = Math.Abs((hitLast - vN) / (tFirst - vN));
+
+                    //get new intersecting range
+                    var rangeMin = hitFirstP > range.X ? hitFirstP : range.X;
+                    var rangeMax = hitLastP < range.Y ? hitLastP : range.Y;
+
+                    if (rangeMin > rangeMax)
+                        return false;
+
+                    range = new Vector2(rangeMin, rangeMax);
+                }
+            }
+
+            //If we got here then we have a future collision.
+            var movementTilCollision = movement * range.X;
+            validMovement = movementTilCollision;
+            return true;
+        }
+
+
+
         private static Vector2 ValidateAxis(Vector2 direction, Vector2 axis)
         {
             if (Vector2.Dot(axis, direction) < 0)
