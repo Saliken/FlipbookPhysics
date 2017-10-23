@@ -12,6 +12,20 @@ namespace FlipbookPhysics
         public Vector2 seperatingVector;
         public FBShape collidedWith;
     }
+
+    public class FutureCollision
+    {
+        public Vector2 movement;
+        public Vector2 collisionPoint;
+        public Vector2 collisionFaceDirection;
+        public Vector2 reflectedDirection;
+    }
+    public class AxisInfo
+    {
+        public Vector2 collisionRange;
+        public Vector2 AxisDirection;
+        public Vector2 Normal;
+    }
     public static class ColliderChecker
     {
 
@@ -58,7 +72,7 @@ namespace FlipbookPhysics
         {
             var axes = a.CollisionAxes(b);
             axes.AddRange(b.CollisionAxes(a));
-
+            
             Vector2 mtv = Vector2.Zero;
             float mtvDistance = float.MaxValue;
             bool futureInterval = false;
@@ -133,13 +147,15 @@ namespace FlipbookPhysics
             return true;
         }
 
-        public static bool CollidesWith2(this FBShape a, FBShape b, Vector2 movement, out Vector2 validMovement)
+        public static bool WillCollideWith(this FBShape a, FBShape b, Vector2 movement, out Vector2 validMovement)
         {
             validMovement = movement;
             var axes = a.CollisionAxes(b);
             axes.AddRange(b.CollisionAxes(a));
-            
-            Vector2 range = new Vector2(float.MinValue, float.MaxValue);
+
+            AxisInfo aInfo = new AxisInfo();
+            aInfo.collisionRange.X = float.MinValue;
+            aInfo.collisionRange.Y = float.MaxValue;
             foreach(var axis in axes)
             {
                 float aMin, aMax, bMin, bMax;
@@ -181,13 +197,14 @@ namespace FlipbookPhysics
                     var hitFirstP = Math.Abs((hitFirst - vN) / (tFirst - vN));
                     var hitLastP = Math.Abs((hitLast - vN) / (tFirst - vN));
 
-                    var rangeMin = hitFirstP > range.X ? hitFirstP : range.X;
-                    var rangeMax = hitLastP < range.Y ? hitLastP : range.Y;
+                    var rangeMin = hitFirstP > aInfo.collisionRange.X ? hitFirstP : aInfo.collisionRange.X;
+                    var rangeMax = hitLastP < aInfo.collisionRange.Y ? hitLastP : aInfo.collisionRange.Y;
 
                     if (rangeMin > rangeMax)
                         return false;
 
-                    range = new Vector2(rangeMin, rangeMax);
+                    aInfo.collisionRange = new Vector2(rangeMin, rangeMax);
+                    aInfo.AxisDirection = axis;
                 }
                 else
                 {
@@ -224,19 +241,25 @@ namespace FlipbookPhysics
                     var hitLastP = Math.Abs((hitLast - vN) / (tFirst - vN));
 
                     //get new intersecting range
-                    var rangeMin = hitFirstP > range.X ? hitFirstP : range.X;
-                    var rangeMax = hitLastP < range.Y ? hitLastP : range.Y;
+                    var rangeMin = hitFirstP > aInfo.collisionRange.X ? hitFirstP : aInfo.collisionRange.X;
+                    var rangeMax = hitLastP < aInfo.collisionRange.Y ? hitLastP : aInfo.collisionRange.Y;
 
                     if (rangeMin > rangeMax)
                         return false;
 
-                    range = new Vector2(rangeMin, rangeMax);
+                    aInfo.collisionRange = new Vector2(rangeMin, rangeMax);
+                    aInfo.AxisDirection = axis;
                 }
             }
 
+
+
             //If we got here then we have a future collision.
-            var movementTilCollision = movement * range.X;
-            validMovement = movementTilCollision;
+            var movementTilCollision = (movement * aInfo.collisionRange.X);
+            var movementRemainder = (movement - movementTilCollision);
+            var movementAmount = Vector2.Dot(movementRemainder, new Vector2(-aInfo.AxisDirection.Y, aInfo.AxisDirection.X));
+            
+            validMovement = movementTilCollision + (movementAmount * new Vector2(-aInfo.AxisDirection.Y, aInfo.AxisDirection.X));
             return true;
         }
 
