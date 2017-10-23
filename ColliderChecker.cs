@@ -202,9 +202,10 @@ namespace FlipbookPhysics
 
                     if (rangeMin > rangeMax)
                         return false;
+                    if (aInfo.collisionRange.X < rangeMin)
+                        aInfo.AxisDirection = axis;
 
                     aInfo.collisionRange = new Vector2(rangeMin, rangeMax);
-                    aInfo.AxisDirection = axis;
                 }
                 else
                 {
@@ -246,20 +247,21 @@ namespace FlipbookPhysics
 
                     if (rangeMin > rangeMax)
                         return false;
+                    if (aInfo.collisionRange.X < rangeMin)
+                        aInfo.AxisDirection = axis;
 
                     aInfo.collisionRange = new Vector2(rangeMin, rangeMax);
-                    aInfo.AxisDirection = axis;
                 }
             }
 
 
 
             //If we got here then we have a future collision.
-            var movementTilCollision = (movement * aInfo.collisionRange.X);
+            var movementTilCollision = (movement * (aInfo.collisionRange.X - 0.5f));
             var movementRemainder = (movement - movementTilCollision);
             var movementAmount = Vector2.Dot(movementRemainder, new Vector2(-aInfo.AxisDirection.Y, aInfo.AxisDirection.X));
             
-            validMovement = movementTilCollision + (movementAmount * new Vector2(-aInfo.AxisDirection.Y, aInfo.AxisDirection.X));
+            validMovement = (movementTilCollision) + (movementAmount * new Vector2(-aInfo.AxisDirection.Y, aInfo.AxisDirection.X));
             return true;
         }
 
