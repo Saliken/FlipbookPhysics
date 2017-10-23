@@ -10,6 +10,10 @@ namespace FlipbookPhysics
 {
     public class FBBody
     {
+
+        public FBBodyType BodyType;
+        public float Mass;
+
         public List<FBShape> colliders;
         public Vector2 position;
         public float rotation;

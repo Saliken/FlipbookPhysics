@@ -9,7 +9,7 @@ namespace FlipbookPhysics
 {
     public static class FBEngine
     {
-        public static FBQuadTree bodies;
+        public static List<FBBody> bodies;
         public static List<FBBody> movedBodies;
         public static float Speed = 1f;
         public static CollisionCheckOrder Order;
@@ -18,7 +18,7 @@ namespace FlipbookPhysics
 
         public static void Initialize(Rectangle worldBoundaries)
         {
-            bodies = new FBQuadTree(worldBoundaries, 10, 3);
+            bodies = new List<FBBody>();
         }
 
         public static void AddMovedBody(FBBody body)
@@ -28,14 +28,12 @@ namespace FlipbookPhysics
 
         public static void Update(GameTime gameTime)
         {
-            //Get a list of all moving objects.
-            //Loop through that list, moving each object
-            //Check for collisions, if they occur stop moving the object.
             foreach(var body in movedBodies)
             {
-                //completely ignore tunneling, assume it's not a problem for now.
-                //So all that would need to happen is to check against nearby bodies and resolve the collision.
-
+                //Two step future SAT.
+                //Step 1: Run SAT and determine the first object all objects will collide with, remove duplicates.
+                //Step 2: Using the remainder of the velocity run future-SAT again, stopping at the first collision.
+                
             }
 
             movedBodies.Clear();

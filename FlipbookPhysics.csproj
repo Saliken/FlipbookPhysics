@@ -50,6 +50,7 @@
     <Compile Include="CollisionCheckOrder.cs" />
     <Compile Include="FBBody.cs" />
     <Compile Include="FBBodyFactory.cs" />
+    <Compile Include="FBBodyType.cs" />
     <Compile Include="FBEngine.cs" />
     <Compile Include="FBQuadTree.cs" />
     <Compile Include="FBQuadTreeNode.cs" />
@@ -59,6 +60,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shapes\FBRectangle.cs" />
     <Compile Include="Shapes\FBShape.cs" />
+    <Compile Include="Verlet\FBPoint.cs" />
+    <Compile Include="Verlet\FBVerletEdge.cs" />
+    <Compile Include="Verlet\FBVerletEngine.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
