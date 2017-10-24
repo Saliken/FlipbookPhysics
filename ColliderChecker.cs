@@ -67,6 +67,7 @@ namespace FlipbookPhysics
 
             return true;
         }
+       
         public static bool CollidesWith(this FBShape a, FBShape b, Action<Collision> onCollision, Vector2 movement)
         {
             var axes = a.CollisionAxes(b);
