@@ -11,21 +11,22 @@ namespace FlipbookPhysics.Verlet
     {
         public FBVerletEdge collisionEdge;
         public FBVerletPoint collisionPoint;
+        public IVerletCollidable collisionEdgeShape;
         public Vector2 mtv;
         public float mtvAmount;
     }
     public static class FBVerletCollisionChecker
     {
-        public static bool CollidesWith(this IVerletCollidable a, IVerletCollidable b)
+        public static bool CollidesWith(this IVerletCollidable a, IVerletCollidable b, out FBVerletCollision collisionResult)
         {
+            collisionResult = null;
+
             var axes = a.CollisionAxes(b);
             axes.AddRange(b.CollisionAxes(a));
+            
+            FBVerletCollision collisionInfo = new FBVerletCollision();
 
-            Vector2 mtv = Vector2.Zero;
-            float mtvDistance = float.MaxValue;
-            FBVerletEdge collisionEdge = null;
-
-            foreach (var edge in axes)
+            foreach(var edge in a.CollisionAxes(b))
             {
                 var axis = edge.NormalLeft;
                 float aMin, aMax, bMin, bMax;
@@ -36,21 +37,54 @@ namespace FlipbookPhysics.Verlet
                 if (intervalDistance >= 0)
                     return false;
 
-                if ((intervalDistance = Math.Abs(intervalDistance)) < mtvDistance)
+                if ((intervalDistance = Math.Abs(intervalDistance)) < collisionInfo.mtvAmount)
                 {
-                    mtv = axis;
-                    mtvDistance = intervalDistance;
-                    collisionEdge = edge;
+                    collisionInfo.mtv = axis;
+                    collisionInfo.mtvAmount = intervalDistance;
+                    collisionInfo.collisionEdge = edge;
+                    collisionInfo.collisionEdgeShape = a;
                 }
             }
 
-            var collision = new FBVerletCollision()
+            foreach(var edge in b.CollisionAxes(a))
             {
-                mtv = mtv,
-                mtvAmount = mtvDistance,
-                collisionEdge = collisionEdge
-            };
+                var axis = edge.NormalLeft;
+                float aMin, aMax, bMin, bMax;
+                a.Project(axis, out aMin, out aMax);
+                b.Project(axis, out bMin, out bMax);
 
+                var intervalDistance = IntervalDistance(aMin, aMax, bMin, bMax);
+                if (intervalDistance >= 0)
+                    return false;
+
+                if ((intervalDistance = Math.Abs(intervalDistance)) < collisionInfo.mtvAmount)
+                {
+                    collisionInfo.mtv = axis;
+                    collisionInfo.mtvAmount = intervalDistance;
+                    collisionInfo.collisionEdge = edge;
+                    collisionInfo.collisionEdgeShape = a;
+                }
+            }
+
+            if(collisionInfo.collisionEdgeShape == b)
+            {
+                var temp = b;
+                b = a;
+                a = temp;
+            }
+
+            float minDistance = float.MaxValue;
+            foreach(var point in a.CollisionPoints())
+            {
+                var distance = (collisionInfo.mtv * (point.Position - b.Center)).LengthSquared();
+                if(distance < minDistance)
+                {
+                    minDistance = distance;
+                    collisionInfo.collisionPoint = point;
+                }
+            }
+
+            collisionResult = collisionInfo;
             return true;
         }
 

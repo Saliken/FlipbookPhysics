@@ -277,8 +277,8 @@ namespace FlipbookPhysics
                 float aMin, aMax, bMin, bMax;
                 a.Project(axis, out aMin, out aMax);
                 b.Project(axis, out bMin, out bMax);
-
-                var movementProjection = Vector2.Dot(axis, movement - bMovement);
+                
+                var movementProjection = Vector2.Dot(axis, movement);
                 if (movementProjection < 0)
                 {
                     var tFirst = aMin + movementProjection;
@@ -373,7 +373,7 @@ namespace FlipbookPhysics
 
 
             //If we got here then we have a future collision.
-            var movementTilCollision = (movement * (aInfo.collisionRange.X - 0.5f));
+            var movementTilCollision = (movement * (aInfo.collisionRange.X));
             var movementRemainder = (movement - movementTilCollision);
             var movementAmount = Vector2.Dot(movementRemainder, new Vector2(-aInfo.AxisDirection.Y, aInfo.AxisDirection.X));
 

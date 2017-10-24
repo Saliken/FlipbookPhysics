@@ -13,6 +13,19 @@ namespace FlipbookPhysics.Verlet
         public List<FBVerletEdge> edges;
         public List<FBVerletEdge> collisionEdges;
 
+        public Vector2 Center
+        {
+            get
+            {
+                Vector2 center = Vector2.Zero;
+                foreach (var p in points)
+                {
+                    center += p.Position;
+                }
+                return new Vector2(center.X / points.Count, center.Y / points.Count);
+            }
+        }
+
         public FBVerletShape()
         {
             points = new List<FBVerletPoint>();
@@ -28,6 +41,11 @@ namespace FlipbookPhysics.Verlet
         public List<FBVerletEdge> CollisionAxes(IVerletCollidable otherShape)
         {
             return collisionEdges;
+        }
+
+        public List<FBVerletPoint> CollisionPoints()
+        {
+            return points;
         }
 
         public Vector2 NearestPoint(Vector2 to)

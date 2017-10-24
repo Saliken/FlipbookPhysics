@@ -28,13 +28,7 @@ namespace FlipbookPhysics
 
         public static void Update(GameTime gameTime)
         {
-            foreach(var body in movedBodies)
-            {
-                //Two step future SAT.
-                //Step 1: Run SAT and determine the first object all objects will collide with, remove duplicates.
-                //Step 2: Using the remainder of the velocity run future-SAT again, stopping at the first collision.
-                
-            }
+
 
             movedBodies.Clear();
         }
