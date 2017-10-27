@@ -381,6 +381,42 @@ namespace FlipbookPhysics
             return true;
         }
 
+        private static void CalcCollisionBeginAndEnd(float aMin, float aMax, float aMovement, float bMin, float bMax, float bMovement, out float begin, out float end)
+        {
+            begin = -1;
+            end = -1;
+
+            if(aMovement >= 0)
+            {
+                begin = CalcCollisionTime(aMax, aMovement, bMin, bMovement);
+                end = CalcCollisionTime(aMin, aMovement, bMax, bMovement);
+            }
+            else if(aMovement < 0)
+            {
+                begin = CalcCollisionTime(aMin, aMovement, bMax, bMovement);
+                end = CalcCollisionTime(aMax, aMovement, bMin, bMovement);
+            }
+        }
+
+        private static float CalcCollisionTime(float a, float aMovement, float b, float bMovement)
+        {
+            //Check for never colliding.
+            if (aMovement <= bMovement)
+                return 0;
+
+            var distance = b - a;
+            if (distance > aMovement)
+                distance = aMovement;
+
+            var c = (b - a) * (1 / (aMovement - bMovement));
+            if (c > 1)
+                return 1;
+            if (c < 0)
+                return 0;
+
+            return c;
+
+        }
 
         private static Vector2 ValidateAxis(Vector2 direction, Vector2 axis)
         {
