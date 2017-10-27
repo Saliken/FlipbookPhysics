@@ -14,7 +14,7 @@ namespace FlipbookPhysics
         public FBBodyType BodyType;
         public float Mass;
 
-        public List<FBShape> colliders;
+        public FBShape collider;
         public Vector2 position;
         public float rotation;
         public Rectangle AABB;
@@ -24,6 +24,8 @@ namespace FlipbookPhysics
         private float moveX, moveY;
         public float MoveX { get { return moveX; } }
         public float MoveY { get { return moveY; } }
+        public Vector2 Movement { get { return new Vector2(moveX, moveY); } }
+        
 
         public FBBody()
         {
@@ -36,6 +38,11 @@ namespace FlipbookPhysics
             moveX += x;
             moveY += y;
             FBEngine.AddMovedBody(this);
+        }
+        public void SetMove(float x, float y)
+        {
+            moveX = x;
+            moveY = y;
         }
     }
 }

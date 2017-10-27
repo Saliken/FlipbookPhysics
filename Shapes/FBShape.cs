@@ -9,6 +9,7 @@ namespace FlipbookPhysics
 { 
     public abstract class FBShape
     {
+        public FBBody Parent;
         public Vector2 Position;
         public float Rotation;
 
