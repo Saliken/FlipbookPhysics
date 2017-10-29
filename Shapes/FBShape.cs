@@ -12,7 +12,7 @@ namespace FlipbookPhysics
         public FBBody Parent;
         public Vector2 Position { get { return Parent.position + Offset; } }
         public Vector2 Offset;
-        public float TotalRotation;
+        public float TotalRotation { get { return Parent.rotation + Rotation; } }
         public float Rotation;
 
         public abstract Vector2 NearestPoint(Vector2 to);

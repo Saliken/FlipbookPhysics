@@ -12,8 +12,8 @@ namespace FlipbookPhysics
         public List<Vector2> Points;
         public List<FBLine> Lines;
 
-        public List<Vector2> MovedPoints { get { return new List<Vector2>(Points.Select(x => new Vector2((x.X * (float)Math.Cos(Rotation) - x.Y * (float)Math.Sin(Rotation)) + Position.X, (x.X * (float)Math.Sin(Rotation) + x.Y * (float)Math.Cos(Rotation)) + Position.Y))); } }
-        public List<FBLine> MovedLines { get { return new List<FBLine>(Lines.Select(x => new FBLine(new Vector2((x.StartPosition.X * (float)Math.Cos(Rotation) - x.StartPosition.Y * (float)Math.Sin(Rotation)) + Position.X, (x.StartPosition.X * (float)Math.Sin(Rotation) + x.StartPosition.Y * (float)Math.Cos(Rotation)) + Position.Y), new Vector2((x.EndPosition.X * (float)Math.Cos(Rotation) - x.EndPosition.Y * (float)Math.Sin(Rotation)) + Position.X, (x.EndPosition.X * (float)Math.Sin(Rotation) + x.EndPosition.Y * (float)Math.Cos(Rotation)) + Position.Y)))); } }
+        public List<Vector2> MovedPoints { get { return new List<Vector2>(Points.Select(x => new Vector2((x.X * (float)Math.Cos(TotalRotation) - x.Y * (float)Math.Sin(TotalRotation)) + Position.X, (x.X * (float)Math.Sin(TotalRotation) + x.Y * (float)Math.Cos(TotalRotation)) + Position.Y))); } }
+        public List<FBLine> MovedLines { get { return new List<FBLine>(Lines.Select(x => new FBLine(new Vector2((x.StartPosition.X * (float)Math.Cos(TotalRotation) - x.StartPosition.Y * (float)Math.Sin(TotalRotation)) + Position.X, (x.StartPosition.X * (float)Math.Sin(TotalRotation) + x.StartPosition.Y * (float)Math.Cos(TotalRotation)) + Position.Y), new Vector2((x.EndPosition.X * (float)Math.Cos(TotalRotation) - x.EndPosition.Y * (float)Math.Sin(TotalRotation)) + Position.X, (x.EndPosition.X * (float)Math.Sin(TotalRotation) + x.EndPosition.Y * (float)Math.Cos(TotalRotation)) + Position.Y)))); } }
 
         public FBPolygon()
         {

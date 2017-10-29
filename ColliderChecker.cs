@@ -28,6 +28,7 @@ namespace FlipbookPhysics
     public class AxisInfo
     {
         public Vector2 collisionRange;
+        public Vector2 lessCollisionRange;
         public Vector2 AxisDirection;
         public Vector2 Normal;
         public float MTVAmount;
@@ -432,15 +433,15 @@ namespace FlipbookPhysics
                     var bMovementProjection = Vector2.Dot(axis, bMovement);
                     var aMovementProjection = Vector2.Dot(axis, movement);
 
-                    float begin, end;
-                    if (!CalcCollisionBeginAndEnd(aMin, aMax, aMovementProjection, bMin, bMax, bMovementProjection, out begin, out end))
+                    float begin, end, lessBegin;
+                    if (!CalcCollisionBeginAndEnd(aMin, aMax, aMovementProjection, bMin, bMax, bMovementProjection, out begin, out end, out lessBegin))
                     {
                         willCollide = false;
                     }
 
                     var rangeMin = begin > aInfo.collisionRange.X ? begin : aInfo.collisionRange.X;
                     var rangeMax = end < aInfo.collisionRange.Y ? end : aInfo.collisionRange.Y;
-
+                    
                     if (rangeMin > rangeMax)
                     {
                         willCollide = false;
@@ -450,6 +451,8 @@ namespace FlipbookPhysics
                         aInfo.AxisDirection = axis;
 
                     aInfo.collisionRange = new Vector2(rangeMin, rangeMax);
+                    if (rangeMin == begin)
+                        aInfo.lessCollisionRange = new Vector2(lessBegin, rangeMax);
                 }
             }
             if (currentlyColliding) //currently colliding
@@ -467,9 +470,8 @@ namespace FlipbookPhysics
             }
             else if(willCollide) //Will collide
             {
-
-                var aFinalMovement = movement * aInfo.collisionRange.X;
-                var bFinalMovement = bMovement * aInfo.collisionRange.X;
+                var aFinalMovement = movement * aInfo.lessCollisionRange.X;
+                var bFinalMovement = bMovement * aInfo.lessCollisionRange.X;
 
                 var aMoveRemainder = movement - aFinalMovement;
                 var bMoveRemainder = bMovement - bFinalMovement;
@@ -493,7 +495,7 @@ namespace FlipbookPhysics
                 collision.RemainderAxis = remainderAxis;
                 collision.ARemainderAxisMovement = aRemainderMovement;
                 collision.BRemainderAxisMovement = bRemainderMovement;
-                collision.CollisionBeginning = aInfo.collisionRange.X;
+                collision.CollisionBeginning = aInfo.lessCollisionRange.X;
                 return true;
             }
             else
@@ -504,10 +506,11 @@ namespace FlipbookPhysics
 
 
 
-        private static bool CalcCollisionBeginAndEnd(float aMin, float aMax, float aMovement, float bMin, float bMax, float bMovement, out float begin, out float end)
+        private static bool CalcCollisionBeginAndEnd(float aMin, float aMax, float aMovement, float bMin, float bMax, float bMovement, out float begin, out float end, out float lessBegin)
         {
             begin = -1;
             end = -1;
+            lessBegin = -1;
 
             float beginC = 0, endC = 0;
 
@@ -531,11 +534,13 @@ namespace FlipbookPhysics
                 return false;
 
             if(aMovement != bMovement)
-                begin = beginC - Math.Abs(1 / (aMovement - bMovement));
+                lessBegin = beginC - Math.Abs(1 / (aMovement - bMovement));
             else
             {
-                begin = beginC;
+                lessBegin = beginC;
             }
+            
+            begin = beginC;
             end = endC;
 
             return true;

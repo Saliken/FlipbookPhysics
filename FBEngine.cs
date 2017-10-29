@@ -30,11 +30,6 @@ namespace FlipbookPhysics
 
         public static void Update(GameTime gameTime)
         {
-            //NOTE:
-            //I should keep a variable on each body that stores their final movement once these iterations are complete.
-            
-            //Two steps.
-            //First we need every pair of potential collisions to check for.
             var collisions = new List<FBPotentialCollisionPair>();
             foreach(var pair in GetPairs())
             {
@@ -48,12 +43,10 @@ namespace FlipbookPhysics
             }
 
             //Determine the set of collisions that are the earliest for each body.
-            var earliestCollisions = FilterEarliestPairs(collisions);
-
-            //Resolve the earliest collisions, queue up movement for the next iteration.
+            var earliestCollisions = FilterEarliestPairs(collisions);            
             foreach(var collision in earliestCollisions)
             {
-                //Before collision
+                //TODO: Before collision
                 if (move)
                 {
                     collision.A.position += collision.CollisionInfo.AMovement;
@@ -61,11 +54,10 @@ namespace FlipbookPhysics
                     collision.B.position += collision.CollisionInfo.BMovement;
                     collision.B.SetMove(collision.CollisionInfo.BRemainderAxisMovement.X, collision.CollisionInfo.BRemainderAxisMovement.Y);
                 }
-
-                //After collision
+                //TODO: After collision
             }
 
-            //Now do another iteration, this time resolve all
+            //Run the algorithm again, this time resolving all movement.
             collisions.Clear();
             foreach(var pair in GetPairs())
             {
@@ -92,8 +84,6 @@ namespace FlipbookPhysics
             {
                 if (move)
                 {
-
-
                     body.position += new Vector2(body.MoveX, body.MoveY);
                     body.SetMove(0, 0);
                 }
