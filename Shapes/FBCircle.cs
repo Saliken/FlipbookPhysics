@@ -14,7 +14,7 @@ namespace FlipbookPhysics
         public FBCircle(float radius, Vector2 offset)
         {
             Radius = radius;
-            Position = offset;
+            Offset = offset;
         }
 
         public override Vector2 NearestPoint(Vector2 to)

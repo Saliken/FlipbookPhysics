@@ -13,6 +13,7 @@ namespace FlipbookPhysics
         public static List<FBBody> movedBodies;
         public static float Speed = 1f;
         public static CollisionCheckOrder Order;
+        public static bool move = false;
 
         static FBEngine() { }
 
@@ -31,7 +32,7 @@ namespace FlipbookPhysics
         {
             //NOTE:
             //I should keep a variable on each body that stores their final movement once these iterations are complete.
-
+            
             //Two steps.
             //First we need every pair of potential collisions to check for.
             var collisions = new List<FBPotentialCollisionPair>();
@@ -53,11 +54,13 @@ namespace FlipbookPhysics
             foreach(var collision in earliestCollisions)
             {
                 //Before collision
-
-                collision.A.position += collision.CollisionInfo.AMovement;
-                collision.A.SetMove(collision.CollisionInfo.ARemainderAxisMovement.X, collision.CollisionInfo.ARemainderAxisMovement.Y);
-                collision.B.position += collision.CollisionInfo.BMovement;
-                collision.B.SetMove(collision.CollisionInfo.BRemainderAxisMovement.X, collision.CollisionInfo.BRemainderAxisMovement.Y);
+                if (move)
+                {
+                    collision.A.position += collision.CollisionInfo.AMovement;
+                    collision.A.SetMove(collision.CollisionInfo.ARemainderAxisMovement.X, collision.CollisionInfo.ARemainderAxisMovement.Y);
+                    collision.B.position += collision.CollisionInfo.BMovement;
+                    collision.B.SetMove(collision.CollisionInfo.BRemainderAxisMovement.X, collision.CollisionInfo.BRemainderAxisMovement.Y);
+                }
 
                 //After collision
             }
@@ -78,13 +81,22 @@ namespace FlipbookPhysics
             earliestCollisions = FilterEarliestPairs(collisions);
             foreach(var collision in earliestCollisions)
             {
-                collision.A.SetMove(collision.CollisionInfo.AMovement.X, collision.CollisionInfo.AMovement.Y);
-                collision.B.SetMove(collision.CollisionInfo.BMovement.X, collision.CollisionInfo.BMovement.Y);
+                if (move)
+                {
+                    collision.A.SetMove(collision.CollisionInfo.AMovement.X, collision.CollisionInfo.AMovement.Y);
+                    collision.B.SetMove(collision.CollisionInfo.BMovement.X, collision.CollisionInfo.BMovement.Y);
+                }
             }
 
             foreach(var body in bodies)
             {
-                body.position += new Vector2(body.MoveX, body.MoveY);
+                if (move)
+                {
+
+
+                    body.position += new Vector2(body.MoveX, body.MoveY);
+                    body.SetMove(0, 0);
+                }
             }
 
             movedBodies.Clear();
@@ -115,12 +127,18 @@ namespace FlipbookPhysics
             var pairs = new List<FBPotentialCollisionPair>();
             for(int i = 0; i < bodies.Count; i++)
             {
-                for(int j = i + 1; j < bodies.Count; j++)
+                if (bodies[i].active)
                 {
-                    if (i == j)
-                        continue;
+                    for (int j = i + 1; j < bodies.Count; j++)
+                    {
+                        if (i == j)
+                            continue;
 
-                    pairs.Add(new FBPotentialCollisionPair() { A = bodies[i], B = bodies[j] });
+                        if (bodies[j].active)
+                        {
+                            pairs.Add(new FBPotentialCollisionPair() { A = bodies[i], B = bodies[j] });
+                        }
+                    }
                 }
             }
 

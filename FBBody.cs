@@ -11,6 +11,7 @@ namespace FlipbookPhysics
     public class FBBody
     {
 
+        public bool active = true;
         public FBBodyType BodyType;
         public float Mass;
 
@@ -31,6 +32,7 @@ namespace FlipbookPhysics
         {
             BodyID = nextBodyID;
             nextBodyID++;
+            FBEngine.bodies.Add(this);
         }
         
         public void Move(float x, float y)

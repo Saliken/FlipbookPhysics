@@ -17,7 +17,7 @@ namespace FlipbookPhysics
         public static FBBody CreateCircle(float radius, Vector2 offset)
         {
             var body = new FBBody();
-            body.colliders.Add(new FBCircle(radius, offset));
+            body.collider = new FBCircle(radius, offset);
             return body;
         }
 
@@ -25,9 +25,9 @@ namespace FlipbookPhysics
         {
             var body = new FBBody();
             if(centered)
-                body.colliders.Add(new FBRectangle(-width / 2, -height / 2, width / 2, height / 2));
+                body.collider = new FBRectangle(-width / 2, -height / 2, width / 2, height / 2);
             else
-                body.colliders.Add(new FBRectangle(0, 0, width, height));
+                body.collider = new FBRectangle(0, 0, width, height);
             return body;
         }
 

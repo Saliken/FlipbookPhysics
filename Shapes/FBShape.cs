@@ -10,7 +10,9 @@ namespace FlipbookPhysics
     public abstract class FBShape
     {
         public FBBody Parent;
-        public Vector2 Position;
+        public Vector2 Position { get { return Parent.position + Offset; } }
+        public Vector2 Offset;
+        public float TotalRotation;
         public float Rotation;
 
         public abstract Vector2 NearestPoint(Vector2 to);
