@@ -7,8 +7,8 @@
     <ProjectGuid>{96475714-2E19-4A1A-A062-301BC7334970}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FlipbookCollision</RootNamespace>
-    <AssemblyName>FlipbookCollision</AssemblyName>
+    <RootNamespace>FlipbookPhysics</RootNamespace>
+    <AssemblyName>FlipbookPhysics</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -48,6 +48,8 @@
     <Compile Include="ColliderChecker.cs" />
     <Compile Include="CollisionAction.cs" />
     <Compile Include="CollisionCheckOrder.cs" />
+    <Compile Include="CollisionEventHandler.cs" />
+    <Compile Include="CollisionInfo.cs" />
     <Compile Include="FBBody.cs" />
     <Compile Include="FBBodyFactory.cs" />
     <Compile Include="FBBodyType.cs" />

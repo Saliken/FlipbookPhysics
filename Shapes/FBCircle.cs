@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FlipbookPhysics
 {
-    public class FBCircle : FBShape
+    public class FBCircle : FBCollider
     {
         public float Radius { get; set; }
 
@@ -21,7 +21,7 @@ namespace FlipbookPhysics
         {
             return Position;
         }
-        public override List<Vector2> CollisionAxes(FBShape shapeToCheckAgainst)
+        public override List<Vector2> CollisionAxes(FBCollider shapeToCheckAgainst)
         {
             var nearestPointOnOtherShape = shapeToCheckAgainst.NearestPoint(Position);
             var direction = nearestPointOnOtherShape - Position;
@@ -33,16 +33,6 @@ namespace FlipbookPhysics
             float dot = Vector2.Dot(axis, Position);
             min = dot - Radius;
             max = dot + Radius;
-        }
-        public override void Project(Vector2 axis, out float min, out float max, out float moveMin, out float moveMax, Vector2 movement)
-        {
-            float dot = Vector2.Dot(axis, Position);
-            min = dot - Radius;
-            max = dot + Radius;
-
-            dot = Vector2.Dot(axis, Position + movement);
-            moveMin = dot - Radius;
-            moveMax = dot + Radius;
         }
     }
 }

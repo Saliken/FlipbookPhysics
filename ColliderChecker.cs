@@ -10,7 +10,7 @@ namespace FlipbookPhysics
     public class Collision
     {
         public Vector2 seperatingVector;
-        public FBShape collidedWith;
+        public FBCollider collidedWith;
     }
 
     public class FutureCollision
@@ -37,11 +37,11 @@ namespace FlipbookPhysics
     public static class ColliderChecker
     {
 
-        public static bool CollidesWith(this FBShape a, FBShape b)
+        public static bool CollidesWith(this FBCollider a, FBCollider b)
         {
             return CollidesWith(a, b, null);
         }
-        public static bool CollidesWith(this FBShape a, FBShape b, Action<Collision> onCollision)
+        public static bool CollidesWith(this FBCollider a, FBCollider b, Action<Collision> onCollision)
         {
             var axes = a.CollisionAxes(b);
             axes.AddRange(b.CollisionAxes(a));
@@ -76,320 +76,7 @@ namespace FlipbookPhysics
             return true;
         }
 
-        public static bool CollidesWith(this FBShape a, FBShape b, Action<Collision> onCollision, Vector2 movement)
-        {
-            var axes = a.CollisionAxes(b);
-            axes.AddRange(b.CollisionAxes(a));
-
-            Vector2 mtv = Vector2.Zero;
-            float mtvDistance = float.MaxValue;
-            bool futureInterval = false;
-
-            var willIntersectCount = 0;
-            var intersectCount = 0;
-            foreach (var axis in axes)
-            {
-                bool intersecting = true, willIntersect = true;
-                float aMin, aMax, bMin, bMax;
-                a.Project(axis, out aMin, out aMax);
-                b.Project(axis, out bMin, out bMax);
-
-                var intervalDistance = IntervalDistance(aMin, aMax, bMin, bMax);
-                if (intervalDistance > 0)
-                    intersecting = false;
-
-                var movementProjection = Vector2.Dot(movement, axis);
-                if (movementProjection < 0)
-                    aMin += movementProjection;
-                else
-                    aMax += movementProjection;
-
-                intervalDistance = IntervalDistance(aMin, aMax, bMin, bMax);
-                if (intervalDistance > 0)
-                    willIntersect = false;
-
-                if (intersecting)
-                {
-                    if (futureInterval != true)
-                    {
-                        if ((intervalDistance = Math.Abs(intervalDistance)) < mtvDistance)
-                        {
-                            mtv = axis;
-                            mtvDistance = intervalDistance;
-                        }
-                    }
-
-                    intersectCount++;
-                }
-                else if (willIntersect)
-                {
-                    //If we reach this it means that there did exist an axis of seperation..
-                    //..but now there does not, which implies this axis is the axis it collides with..
-                    //..so treat this axis as more important (for tunneling prevention).
-                    if (futureInterval == false)
-                    {
-                        futureInterval = true;
-                        mtvDistance = float.MaxValue;
-                    }
-                    willIntersectCount++;
-                    if ((intervalDistance = Math.Abs(intervalDistance)) < mtvDistance)
-                    {
-                        mtv = axis;
-                        mtvDistance = intervalDistance;
-                    }
-                }
-                else
-                {
-                    return false; //axis of seperation.
-                }
-            }
-
-            var collision = new Collision()
-            {
-                seperatingVector = ValidateAxis(a.Position - b.Position, mtv) * mtvDistance,
-                collidedWith = b
-            };
-
-            onCollision?.Invoke(collision);
-
-            return true;
-        }
-        public static bool WillCollideWith(this FBShape a, FBShape b, Vector2 movement, out Vector2 validMovement)
-        {
-            validMovement = movement;
-            var axes = a.CollisionAxes(b);
-            axes.AddRange(b.CollisionAxes(a));
-
-            AxisInfo aInfo = new AxisInfo();
-            aInfo.collisionRange.X = float.MinValue;
-            aInfo.collisionRange.Y = float.MaxValue;
-            foreach (var axis in axes)
-            {
-                float aMin, aMax, bMin, bMax;
-                a.Project(axis, out aMin, out aMax);
-                b.Project(axis, out bMin, out bMax);
-
-                var movementProjection = Vector2.Dot(axis, movement);
-                if (movementProjection < 0)
-                {
-                    var tFirst = aMin + movementProjection;
-                    var tLast = aMax + movementProjection;
-
-                    if (aMax < bMin) //Moving away from a future collision
-                        return false;
-
-                    //determine the aMax point where we begin colliding and end colliding.
-                    float hitFirst, hitLast;
-                    if (tFirst < bMax)
-                    {
-                        if (aMin < bMax)
-                            hitFirst = aMin;
-                        else
-                            hitFirst = bMax;
-                    }
-                    else
-                        return false;
-
-                    if (tLast < bMin)
-                    {
-                        hitLast = bMin - (aMax - aMin);
-                    }
-                    else
-                    {
-                        hitLast = tFirst;
-                    }
-
-                    //determine at what percent of the velocity's movement we are colliding.
-                    var vN = aMin;
-                    var hitFirstP = Math.Abs((hitFirst - vN) / (tFirst - vN));
-                    var hitLastP = Math.Abs((hitLast - vN) / (tFirst - vN));
-
-                    var rangeMin = hitFirstP > aInfo.collisionRange.X ? hitFirstP : aInfo.collisionRange.X;
-                    var rangeMax = hitLastP < aInfo.collisionRange.Y ? hitLastP : aInfo.collisionRange.Y;
-
-                    if (rangeMin > rangeMax)
-                        return false;
-                    if (aInfo.collisionRange.X < rangeMin)
-                        aInfo.AxisDirection = axis;
-
-                    aInfo.collisionRange = new Vector2(rangeMin, rangeMax);
-                }
-                else
-                {
-                    var tFirst = aMax + movementProjection;
-                    var tLast = aMin + movementProjection;
-
-                    if (aMin > bMax) //Moving away from a future collision
-                        return false;
-
-                    //determine the aMax point where we begin colliding and end colliding.
-                    float hitFirst, hitLast;
-                    if (tFirst > bMin)
-                    {
-                        if (aMax > bMin)
-                            hitFirst = aMax;
-                        else
-                            hitFirst = bMin;
-                    }
-                    else
-                        return false;
-
-                    if (tLast > bMax)
-                    {
-                        hitLast = bMax + (aMax - aMin);
-                    }
-                    else
-                    {
-                        hitLast = tFirst;
-                    }
-
-                    //determine at what percent of the velocity's movement we are colliding.
-                    var vN = aMax;
-                    var hitFirstP = Math.Abs((hitFirst - vN) / (tFirst - vN));
-                    var hitLastP = Math.Abs((hitLast - vN) / (tFirst - vN));
-
-                    //get new intersecting range
-                    var rangeMin = hitFirstP > aInfo.collisionRange.X ? hitFirstP : aInfo.collisionRange.X;
-                    var rangeMax = hitLastP < aInfo.collisionRange.Y ? hitLastP : aInfo.collisionRange.Y;
-
-                    if (rangeMin > rangeMax)
-                        return false;
-                    if (aInfo.collisionRange.X < rangeMin)
-                        aInfo.AxisDirection = axis;
-
-                    aInfo.collisionRange = new Vector2(rangeMin, rangeMax);
-                }
-            }
-
-
-
-            //If we got here then we have a future collision.
-            var movementTilCollision = (movement * (aInfo.collisionRange.X - 0.5f));
-            var movementRemainder = (movement - movementTilCollision);
-            var movementAmount = Vector2.Dot(movementRemainder, new Vector2(-aInfo.AxisDirection.Y, aInfo.AxisDirection.X));
-
-            validMovement = (movementTilCollision) + (movementAmount * new Vector2(-aInfo.AxisDirection.Y, aInfo.AxisDirection.X));
-            return true;
-        }
-        public static bool WillCollideWith(this FBShape a, Vector2 movement, FBShape b, Vector2 bMovement, out Vector2 validMovement)
-        {
-            validMovement = movement;
-            var axes = a.CollisionAxes(b);
-            axes.AddRange(b.CollisionAxes(a));
-
-            AxisInfo aInfo = new AxisInfo();
-            aInfo.collisionRange.X = float.MinValue;
-            aInfo.collisionRange.Y = float.MaxValue;
-            foreach (var axis in axes)
-            {
-                float aMin, aMax, bMin, bMax;
-                a.Project(axis, out aMin, out aMax);
-                b.Project(axis, out bMin, out bMax);
-
-                var movementProjection = Vector2.Dot(axis, movement);
-                if (movementProjection < 0)
-                {
-                    var tFirst = aMin + movementProjection;
-                    var tLast = aMax + movementProjection;
-
-                    if (aMax < bMin) //Moving away from a future collision
-                        return false;
-
-                    //determine the aMax point where we begin colliding and end colliding.
-                    float hitFirst, hitLast;
-                    if (tFirst < bMax)
-                    {
-                        if (aMin < bMax)
-                            hitFirst = aMin;
-                        else
-                            hitFirst = bMax;
-                    }
-                    else
-                        return false;
-
-                    if (tLast < bMin)
-                    {
-                        hitLast = bMin - (aMax - aMin);
-                    }
-                    else
-                    {
-                        hitLast = tFirst;
-                    }
-
-                    //determine at what percent of the velocity's movement we are colliding.
-                    var vN = aMin;
-                    var hitFirstP = Math.Abs((hitFirst - vN) / (tFirst - vN));
-                    var hitLastP = Math.Abs((hitLast - vN) / (tFirst - vN));
-
-                    var rangeMin = hitFirstP > aInfo.collisionRange.X ? hitFirstP : aInfo.collisionRange.X;
-                    var rangeMax = hitLastP < aInfo.collisionRange.Y ? hitLastP : aInfo.collisionRange.Y;
-
-                    if (rangeMin > rangeMax)
-                        return false;
-                    if (aInfo.collisionRange.X < rangeMin)
-                        aInfo.AxisDirection = axis;
-
-                    aInfo.collisionRange = new Vector2(rangeMin, rangeMax);
-                }
-                else
-                {
-                    var tFirst = aMax + movementProjection;
-                    var tLast = aMin + movementProjection;
-
-                    if (aMin > bMax) //Moving away from a future collision
-                        return false;
-
-                    //determine the aMax point where we begin colliding and end colliding.
-                    float hitFirst, hitLast;
-                    if (tFirst > bMin)
-                    {
-                        if (aMax > bMin)
-                            hitFirst = aMax;
-                        else
-                            hitFirst = bMin;
-                    }
-                    else
-                        return false;
-
-                    if (tLast > bMax)
-                    {
-                        hitLast = bMax + (aMax - aMin);
-                    }
-                    else
-                    {
-                        hitLast = tFirst;
-                    }
-
-                    //determine at what percent of the velocity's movement we are colliding.
-                    var vN = aMax;
-                    var hitFirstP = Math.Abs((hitFirst - vN) / (tFirst - vN));
-                    var hitLastP = Math.Abs((hitLast - vN) / (tFirst - vN));
-
-                    //get new intersecting range
-                    var rangeMin = hitFirstP > aInfo.collisionRange.X ? hitFirstP : aInfo.collisionRange.X;
-                    var rangeMax = hitLastP < aInfo.collisionRange.Y ? hitLastP : aInfo.collisionRange.Y;
-
-                    if (rangeMin > rangeMax)
-                        return false;
-                    if (aInfo.collisionRange.X < rangeMin)
-                        aInfo.AxisDirection = axis;
-
-                    aInfo.collisionRange = new Vector2(rangeMin, rangeMax);
-                }
-            }
-
-
-
-            //If we got here then we have a future collision.
-            var movementTilCollision = (movement * (aInfo.collisionRange.X));
-            var movementRemainder = (movement - movementTilCollision);
-            var movementAmount = Vector2.Dot(movementRemainder, new Vector2(-aInfo.AxisDirection.Y, aInfo.AxisDirection.X));
-
-            validMovement = (movementTilCollision) + (movementAmount * new Vector2(-aInfo.AxisDirection.Y, aInfo.AxisDirection.X));
-            return true;
-        }
-
-        public static bool WillCollideWith2(this FBShape a, Vector2 movement, FBShape b, Vector2 bMovement, out FutureCollision collision)
+        public static bool WillCollide(FBCollider a, Vector2 aMovement, FBCollider b, Vector2 bMovement, out FutureCollision collision)
         {
             var axes = a.CollisionAxes(b);
             axes.AddRange(b.CollisionAxes(a));
@@ -431,7 +118,122 @@ namespace FlipbookPhysics
                 if (willCollide)
                 {
                     var bMovementProjection = Vector2.Dot(axis, bMovement);
-                    var aMovementProjection = Vector2.Dot(axis, movement);
+                    var aMovementProjection = Vector2.Dot(axis, aMovement);
+
+                    float begin, end, lessBegin;
+                    if (!CalcCollisionBeginAndEnd(aMin, aMax, aMovementProjection, bMin, bMax, bMovementProjection, out begin, out end, out lessBegin))
+                    {
+                        willCollide = false;
+                    }
+
+                    var rangeMin = begin > aInfo.collisionRange.X ? begin : aInfo.collisionRange.X;
+                    var rangeMax = end < aInfo.collisionRange.Y ? end : aInfo.collisionRange.Y;
+
+                    if (rangeMin > rangeMax)
+                    {
+                        willCollide = false;
+                    }
+
+                    if (aInfo.collisionRange.X < rangeMin)
+                        aInfo.AxisDirection = axis;
+
+                    aInfo.collisionRange = new Vector2(rangeMin, rangeMax);
+                    if (rangeMin == begin)
+                        aInfo.lessCollisionRange = new Vector2(lessBegin, rangeMax);
+                }
+            }
+            if (currentlyColliding) //currently colliding
+            {
+                //use mtv
+                collision.DidCollide = true;
+                collision.AMovement = aInfo.MTVAxis * (aInfo.MTVAmount / 2);
+                collision.BMovement = aInfo.MTVAxis * (-aInfo.MTVAmount / 2);
+                collision.ARemainder = Vector2.Zero;
+                collision.BRemainder = Vector2.Zero;
+                collision.ARemainderAxisMovement = Vector2.Zero;
+                collision.BRemainderAxisMovement = Vector2.Zero;
+                collision.CollisionBeginning = 0;
+                return true;
+            }
+            else if (willCollide) //Will collide
+            {
+                var aFinalMovement = aMovement * aInfo.lessCollisionRange.X;
+                var bFinalMovement = bMovement * aInfo.lessCollisionRange.X;
+
+                var aMoveRemainder = aMovement - aFinalMovement;
+                var bMoveRemainder = bMovement - bFinalMovement;
+
+                var remainderAxis = new Vector2(-aInfo.AxisDirection.Y, aInfo.AxisDirection.X);
+
+                var aRemainderAmount = Vector2.Dot(aMoveRemainder, remainderAxis);
+                var bRemainderAmount = Vector2.Dot(bMoveRemainder, remainderAxis);
+
+                var aRemainderMovement = (aRemainderAmount * remainderAxis);
+                var bRemainderMovement = (bRemainderAmount * remainderAxis);
+
+                var aMove = aFinalMovement + aRemainderMovement;
+                var bMove = bFinalMovement + bRemainderMovement;
+
+                collision.DidCollide = true;
+                collision.AMovement = aFinalMovement;
+                collision.BMovement = bFinalMovement;
+                collision.ARemainder = aMoveRemainder;
+                collision.BRemainder = bMoveRemainder;
+                collision.RemainderAxis = remainderAxis;
+                collision.ARemainderAxisMovement = aRemainderMovement;
+                collision.BRemainderAxisMovement = bRemainderMovement;
+                collision.CollisionBeginning = aInfo.lessCollisionRange.X;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool WillCollideWith(this FBCollider a, Vector2 aMovement, FBCollider b, Vector2 bMovement, out FutureCollision collision)
+        {
+            var axes = a.CollisionAxes(b);
+            axes.AddRange(b.CollisionAxes(a));
+
+            collision = new FutureCollision();
+            collision.DidCollide = false;
+
+            AxisInfo aInfo = new AxisInfo();
+            aInfo.MTVAmount = float.MaxValue;
+            aInfo.collisionRange.X = float.MinValue;
+            aInfo.collisionRange.Y = float.MaxValue;
+
+            bool currentlyColliding = true;
+            bool willCollide = true;
+
+            foreach (var axis in axes)
+            {
+                float aMin, aMax, bMin, bMax;
+                a.Project(axis, out aMin, out aMax);
+                b.Project(axis, out bMin, out bMax);
+
+                if (currentlyColliding)
+                {
+                    var intervalDistance = IntervalDistance(aMin, aMax, bMin, bMax);
+                    if (intervalDistance < 0) //Currently colliding, save mtv.
+                    {
+                        if ((intervalDistance = Math.Abs(intervalDistance)) < aInfo.MTVAmount)
+                        {
+                            aInfo.MTVAmount = intervalDistance;
+                            aInfo.MTVAxis = axis;
+                        }
+                    }
+                    else
+                    {
+                        currentlyColliding = false;
+                    }
+                }
+
+                if (willCollide)
+                {
+                    var bMovementProjection = Vector2.Dot(axis, bMovement);
+                    var aMovementProjection = Vector2.Dot(axis, aMovement);
 
                     float begin, end, lessBegin;
                     if (!CalcCollisionBeginAndEnd(aMin, aMax, aMovementProjection, bMin, bMax, bMovementProjection, out begin, out end, out lessBegin))
@@ -470,10 +272,10 @@ namespace FlipbookPhysics
             }
             else if(willCollide) //Will collide
             {
-                var aFinalMovement = movement * aInfo.lessCollisionRange.X;
+                var aFinalMovement = aMovement * aInfo.lessCollisionRange.X;
                 var bFinalMovement = bMovement * aInfo.lessCollisionRange.X;
 
-                var aMoveRemainder = movement - aFinalMovement;
+                var aMoveRemainder = aMovement - aFinalMovement;
                 var bMoveRemainder = bMovement - bFinalMovement;
 
                 var remainderAxis = new Vector2(-aInfo.AxisDirection.Y, aInfo.AxisDirection.X);
@@ -503,8 +305,6 @@ namespace FlipbookPhysics
                 return false;
             }
         }
-
-
 
         private static bool CalcCollisionBeginAndEnd(float aMin, float aMax, float aMovement, float bMin, float bMax, float bMovement, out float begin, out float end, out float lessBegin)
         {
@@ -545,7 +345,6 @@ namespace FlipbookPhysics
 
             return true;
         }
-
         private static float CalcCollisionTime(float a, float aMovement, float b, float bMovement)
         {
             var distance = b - a;

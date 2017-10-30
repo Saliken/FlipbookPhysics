@@ -34,6 +34,9 @@ namespace FlipbookPhysics
         public static FBBody CreatePolygon(List<Vector2> points)
         {
             var body = new FBBody();
+            FBPolygon collider = new FBPolygon();
+            points.ForEach(x => collider.AddPoint(x.X, x.Y));
+            body.collider = collider;
             return body;
         }
     }

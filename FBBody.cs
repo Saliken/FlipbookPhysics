@@ -11,11 +11,11 @@ namespace FlipbookPhysics
     public class FBBody
     {
 
-        public bool active = true;
+        public bool Active = true;
         public FBBodyType BodyType;
         public float Mass;
 
-        public FBShape collider;
+        public FBCollider collider;
         public Vector2 position;
         public float rotation;
         public Rectangle AABB;
@@ -26,25 +26,40 @@ namespace FlipbookPhysics
         public float MoveX { get { return moveX; } }
         public float MoveY { get { return moveY; } }
         public Vector2 Movement { get { return new Vector2(moveX, moveY); } }
+
+        public event CollisionEventHandler OnBeforeCollision;
+        public event CollisionEventHandler OnAfterCollision;
         
 
         public FBBody()
         {
             BodyID = nextBodyID;
             nextBodyID++;
+
             FBEngine.bodies.Add(this);
+            
         }
         
         public void Move(float x, float y)
         {
             moveX += x;
             moveY += y;
+
             FBEngine.AddMovedBody(this);
         }
         public void SetMove(float x, float y)
         {
             moveX = x;
             moveY = y;
+        }
+
+        public void BeforeCollision(FutureCollision collision)
+        {
+            OnBeforeCollision?.Invoke(collision);
+        }
+        public void AfterCollision(FutureCollision collision)
+        {
+            OnAfterCollision?.Invoke(collision);  
         }
     }
 }

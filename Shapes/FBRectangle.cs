@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework;
 
 namespace FlipbookPhysics
 {
-    public class FBRectangle : FBShape
+    public class FBRectangle : FBCollider
     {
         public float width;
         public float height;
@@ -46,7 +46,7 @@ namespace FlipbookPhysics
             this.height = height;
         }
 
-        public override List<Vector2> CollisionAxes(FBShape otherShape)
+        public override List<Vector2> CollisionAxes(FBCollider otherShape)
         {
             return Lines.Select(x => x.NormalRight).ToList();
         }
@@ -64,32 +64,6 @@ namespace FlipbookPhysics
                 }
             }
             return nearestPoint;
-        }
-        public override void Project(Vector2 axis, out float min, out float max, out float moveMin, out float moveMax, Vector2 movement)
-        {
-            float dot;
-            float minValue = float.MaxValue;
-            float maxValue = float.MinValue;
-            float minMoveValue = float.MaxValue;
-            float maxMoveValue = float.MinValue;
-            foreach(var point in Points)
-            {
-                dot = Vector2.Dot(point, axis);
-                if (dot < minValue)
-                    minValue = dot;
-                else if (dot > maxValue)
-                    maxValue = dot;
-
-                dot = Vector2.Dot(point + movement, axis);
-                if (dot < minMoveValue)
-                    minMoveValue = dot;
-                else if (dot > maxMoveValue)
-                    maxMoveValue = dot;
-            }
-            min = minValue;
-            max = maxValue;
-            moveMin = minMoveValue;
-            moveMax = maxMoveValue;
         }
 
         public override void Project(Vector2 axis, out float min, out float max)
