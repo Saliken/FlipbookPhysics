@@ -25,6 +25,11 @@ namespace FlipbookPhysics
         {
             var nearestPointOnOtherShape = shapeToCheckAgainst.NearestPoint(Position);
             var direction = nearestPointOnOtherShape - Position;
+            if (direction == Vector2.Zero) //Centers are the same.
+            {
+                Random r = new Random();
+                direction = new Vector2(r.Next(-100, 100), r.Next(-100, 100));
+            }
             direction.Normalize();
             return new List<Vector2>() { direction };
         }

@@ -13,7 +13,7 @@ namespace FlipbookPhysics
         public static List<FBBody> movedBodies;
         public static float Speed = 1f;
         public static CollisionCheckOrder Order;
-        public static bool move = false;
+        public static bool move = true;
 
         static FBEngine() { }
 

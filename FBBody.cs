@@ -47,10 +47,22 @@ namespace FlipbookPhysics
 
             FBEngine.AddMovedBody(this);
         }
+        public void Move(Vector2 movement)
+        {
+            moveX += movement.X;
+            moveY += movement.Y;
+
+            FBEngine.AddMovedBody(this);
+        }
         public void SetMove(float x, float y)
         {
             moveX = x;
             moveY = y;
+        }
+        public void SetMove(Vector2 movement)
+        {
+            moveX = movement.X;
+            moveY = movement.Y;
         }
 
         public void BeforeCollision(FutureCollision collision)

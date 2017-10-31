@@ -18,6 +18,7 @@ namespace FlipbookPhysics
         {
             var body = new FBBody();
             body.collider = new FBCircle(radius, offset);
+            body.collider.Body = body;
             return body;
         }
 
@@ -28,6 +29,7 @@ namespace FlipbookPhysics
                 body.collider = new FBRectangle(-width / 2, -height / 2, width / 2, height / 2);
             else
                 body.collider = new FBRectangle(0, 0, width, height);
+            body.collider.Body = body;
             return body;
         }
 
@@ -37,6 +39,7 @@ namespace FlipbookPhysics
             FBPolygon collider = new FBPolygon();
             points.ForEach(x => collider.AddPoint(x.X, x.Y));
             body.collider = collider;
+            body.collider.Body = body;
             return body;
         }
     }
