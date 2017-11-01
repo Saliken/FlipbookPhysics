@@ -334,7 +334,8 @@ namespace FlipbookPhysics
                 return false;
 
             if(aMovement != bMovement)
-                lessBegin = beginC - Math.Abs(1 / (aMovement - bMovement));
+                //Get approximately a pixel distance in order to keep objects separated.
+                lessBegin = beginC - Math.Abs(0.85f / (aMovement - bMovement));
             else
             {
                 lessBegin = beginC;
