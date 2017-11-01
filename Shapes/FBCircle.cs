@@ -24,11 +24,10 @@ namespace FlipbookPhysics
         public override List<Vector2> CollisionAxes(FBCollider shapeToCheckAgainst)
         {
             var nearestPointOnOtherShape = shapeToCheckAgainst.NearestPoint(Position);
-            var direction = nearestPointOnOtherShape - Position;
+            var direction = Position -  nearestPointOnOtherShape;
             if (direction == Vector2.Zero) //Centers are the same.
             {
-                Random r = new Random();
-                direction = new Vector2(r.Next(-100, 100), r.Next(-100, 100));
+                direction = new Vector2(0, 1);
             }
             direction.Normalize();
             return new List<Vector2>() { direction };

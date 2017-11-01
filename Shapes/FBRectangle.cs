@@ -68,9 +68,10 @@ namespace FlipbookPhysics
 
         public override void Project(Vector2 axis, out float min, out float max)
         {
-            float dot;
-            float minValue = float.MaxValue;
-            float maxValue = float.MinValue;
+            float dot, minValue, maxValue;
+            dot = Vector2.Dot(Points[0], axis);
+            minValue = dot;
+            maxValue = dot;
             foreach (var point in Points)
             {
                 dot = Vector2.Dot(point, axis);
