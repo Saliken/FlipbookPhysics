@@ -30,37 +30,14 @@ namespace FlipbookPhysics
 
         public static void Update(GameTime gameTime)
         {
+            Iterate();
+            Finish();
+        }
+        private static void Finish()
+        {
             var collisions = GetCollisions();
             var earliestCollisions = FilterEarliestPairs(collisions);
-
             foreach (var collision in earliestCollisions)
-            {
-                
-
-                if (move)
-                {
-                    collision.A.BeforeCollision(collision.CollisionInfo);
-                    collision.B.BeforeCollision(collision.CollisionInfo);
-
-                    collision.A.position += collision.CollisionInfo.AMovement;
-                    collision.A.SetMove(collision.CollisionInfo.ARemainderAxisMovement.X, collision.CollisionInfo.ARemainderAxisMovement.Y);
-                    collision.B.position += collision.CollisionInfo.BMovement;
-                    collision.B.SetMove(collision.CollisionInfo.BRemainderAxisMovement.X, collision.CollisionInfo.BRemainderAxisMovement.Y);
-
-                    collision.A.AfterCollision(collision.CollisionInfo);
-                    collision.B.AfterCollision(collision.CollisionInfo);
-                }
-
-                
-            }
-
-            //Run again to resolve remainder movement.
-            collisions.Clear();
-            collisions = GetCollisions();
-
-            earliestCollisions.Clear();
-            earliestCollisions = FilterEarliestPairs(collisions);
-            foreach(var collision in earliestCollisions)
             {
                 if (move)
                 {
@@ -76,6 +53,31 @@ namespace FlipbookPhysics
             }
 
             MoveBodies();
+        }
+
+        private static void Iterate()
+        {
+            var collisions = GetCollisions();
+            var earliestCollisions = FilterEarliestPairs(collisions);
+
+            foreach (var collision in earliestCollisions)
+            {
+
+
+                if (move)
+                {
+                    collision.A.BeforeCollision(collision.CollisionInfo);
+                    collision.B.BeforeCollision(collision.CollisionInfo);
+
+                    collision.A.position += collision.CollisionInfo.AMovement;
+                    collision.A.SetMove(collision.CollisionInfo.ARemainderAxisMovement.X, collision.CollisionInfo.ARemainderAxisMovement.Y);
+                    collision.B.position += collision.CollisionInfo.BMovement;
+                    collision.B.SetMove(collision.CollisionInfo.BRemainderAxisMovement.X, collision.CollisionInfo.BRemainderAxisMovement.Y);
+
+                    collision.A.AfterCollision(collision.CollisionInfo);
+                    collision.B.AfterCollision(collision.CollisionInfo);
+                }
+            }
         }
 
         private static void MoveBodies()
