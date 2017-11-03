@@ -9,10 +9,7 @@ namespace FlipbookPhysics
 { 
     public abstract class FBCollider
     {
-        public FBBody Body;
-        public Vector2 Position { get { return Body.position + Offset; } }
-        public Vector2 Offset;
-        public float TotalRotation { get { return Body.rotation + Rotation; } }
+        public Vector2 Position;
         public float Rotation;
 
         public abstract Vector2 NearestPoint(Vector2 to);

@@ -12,20 +12,17 @@ namespace FlipbookPhysics
     {
 
         public bool Active = true;
-        public FBBodyType BodyType;
-        public float Mass;
-
         public FBCollider collider;
-        public Vector2 position;
-        public float rotation;
         public Rectangle AABB;
-        public int BodyID { get; protected set; }
-        private static int nextBodyID = 1;
 
-        private float moveX, moveY;
-        public float MoveX { get { return moveX; } }
-        public float MoveY { get { return moveY; } }
-        public Vector2 Movement { get { return new Vector2(moveX, moveY); } }
+        public object UserData;
+
+        public Vector2 Position { get { return collider.Position; } set { collider.Position = value; } }
+        public float Rotation { get { return collider.Rotation; } set { collider.Rotation = value; } }
+
+        public float MovementX { get; set; }
+        public float MovementY { get; set; }
+        public Vector2 Movement { get { return new Vector2(MovementX, MovementY); } }
 
         public event CollisionEventHandler OnBeforeCollision;
         public event CollisionEventHandler OnAfterCollision;
@@ -33,36 +30,34 @@ namespace FlipbookPhysics
 
         public FBBody()
         {
-            BodyID = nextBodyID;
-            nextBodyID++;
-
             FBEngine.bodies.Add(this);
-            
         }
         
         public void Move(float x, float y)
         {
-            moveX += x;
-            moveY += y;
+            MovementX += x;
+            MovementY += y;
 
             FBEngine.AddMovedBody(this);
         }
         public void Move(Vector2 movement)
         {
-            moveX += movement.X;
-            moveY += movement.Y;
+            MovementX += movement.X;
+            MovementY += movement.Y;
 
             FBEngine.AddMovedBody(this);
         }
         public void SetMove(float x, float y)
         {
-            moveX = x;
-            moveY = y;
+            MovementX = x;
+            MovementY = y;
+            FBEngine.AddMovedBody(this);
         }
         public void SetMove(Vector2 movement)
         {
-            moveX = movement.X;
-            moveY = movement.Y;
+            MovementX = movement.X;
+            MovementY = movement.Y;
+            FBEngine.AddMovedBody(this);
         }
 
         public void BeforeCollision(FutureCollision collision)

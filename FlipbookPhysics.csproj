@@ -58,12 +58,12 @@
     <Compile Include="FBQuadTree.cs" />
     <Compile Include="FBQuadTreeNode.cs" />
     <Compile Include="Verlet\IVerletCollidable.cs" />
-    <Compile Include="Shapes\FBCircle.cs" />
-    <Compile Include="Shapes\FBLine.cs" />
-    <Compile Include="Shapes\FBPolygon.cs" />
+    <Compile Include="Colliders\FBCircle.cs" />
+    <Compile Include="Colliders\FBLine.cs" />
+    <Compile Include="Colliders\FBPolygon.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Shapes\FBRectangle.cs" />
-    <Compile Include="Shapes\FBShape.cs" />
+    <Compile Include="Colliders\FBRectangle.cs" />
+    <Compile Include="Colliders\FBCollider.cs" />
     <Compile Include="Verlet\FBPoint.cs" />
     <Compile Include="Verlet\FBVerletCollisionChecker.cs" />
     <Compile Include="Verlet\FBVerletEdge.cs" />

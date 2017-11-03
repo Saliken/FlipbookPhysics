@@ -70,9 +70,9 @@ namespace FlipbookPhysics
                     collision.A.BeforeCollision(collision.CollisionInfo);
                     collision.B.BeforeCollision(collision.CollisionInfo);
 
-                    collision.A.position += collision.CollisionInfo.AMovement;
+                    collision.A.Position += collision.CollisionInfo.AMovement;
                     collision.A.SetMove(collision.CollisionInfo.ARemainderAxisMovement.X, collision.CollisionInfo.ARemainderAxisMovement.Y);
-                    collision.B.position += collision.CollisionInfo.BMovement;
+                    collision.B.Position += collision.CollisionInfo.BMovement;
                     collision.B.SetMove(collision.CollisionInfo.BRemainderAxisMovement.X, collision.CollisionInfo.BRemainderAxisMovement.Y);
 
                     collision.A.AfterCollision(collision.CollisionInfo);
@@ -87,7 +87,7 @@ namespace FlipbookPhysics
             {
                 if (move)
                 {
-                    body.position += new Vector2(body.MoveX, body.MoveY);
+                    body.Position += body.Movement;
                     body.SetMove(0, 0);
                 }
             }
