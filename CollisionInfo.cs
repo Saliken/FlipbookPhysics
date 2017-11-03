@@ -11,8 +11,15 @@ namespace FlipbookPhysics
     {
         public FBBody BodyA;
         public FBBody BodyB;
-        public Vector2 AValidMovement;
-        public Vector2 BValidMovement;
+        public MovementInfo AMovement;
+        public MovementInfo BMovement;
+    }
 
+    public class MovementInfo
+    {
+        public Vector2 ValidMovement;
+        public Vector2 RemainderMovement;
+        public Vector2 RemainderAxis;
+        public Vector2 ReflectedMovement;
     }
 }

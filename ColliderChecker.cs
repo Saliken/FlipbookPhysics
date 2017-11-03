@@ -23,6 +23,10 @@ namespace FlipbookPhysics
         public Vector2 BRemainder;
         public Vector2 ARemainderAxisMovement;
         public Vector2 BRemainderAxisMovement;
+        public Vector2 AReflectedAxis;
+        public Vector2 BReflectedAxis;
+        public Vector2 AReflectedMovement;
+        public Vector2 BReflectedMovement;
         public float CollisionBeginning;
     }
     public class AxisInfo
@@ -289,6 +293,10 @@ namespace FlipbookPhysics
                 var aMove = aFinalMovement + aRemainderMovement;
                 var bMove = bFinalMovement + bRemainderMovement;
 
+                var aReflectedMovement = Vector2.Reflect(aFinalMovement, aInfo.AxisDirection);
+                var bReflectedMovement = Vector2.Reflect(bFinalMovement, aInfo.AxisDirection);
+                
+
                 collision.DidCollide = true;
                 collision.AMovement = aFinalMovement;
                 collision.BMovement = bFinalMovement;
@@ -298,6 +306,8 @@ namespace FlipbookPhysics
                 collision.ARemainderAxisMovement = aRemainderMovement;
                 collision.BRemainderAxisMovement = bRemainderMovement;
                 collision.CollisionBeginning = aInfo.lessCollisionRange.X;
+                collision.AReflectedMovement = aReflectedMovement;
+                collision.BReflectedMovement = bReflectedMovement;
                 return true;
             }
             else

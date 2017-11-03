@@ -63,8 +63,6 @@ namespace FlipbookPhysics
 
             foreach (var collision in earliestCollisions)
             {
-
-
                 if (move)
                 {
                     collision.A.BeforeCollision(collision.CollisionInfo);
@@ -79,6 +77,30 @@ namespace FlipbookPhysics
                     collision.B.AfterCollision(collision.CollisionInfo);
                 }
             }
+        }
+
+        private static CollisionInfo ConvertToCollisionInfo(FutureCollision collision, FBBody bodyA, FBBody bodyB)
+        {
+            var collisionInfo = new CollisionInfo()
+            {
+                BodyA = bodyA,
+                BodyB = bodyB,
+                AMovement = new MovementInfo()
+                {
+                    ValidMovement = collision.AMovement,
+                    RemainderMovement = collision.ARemainderAxisMovement,
+                    RemainderAxis = collision.RemainderAxis,
+                    ReflectedMovement = collision.AReflectedMovement
+                },
+                BMovement = new MovementInfo()
+                {
+                    ValidMovement = collision.BMovement,
+                    RemainderMovement = collision.BRemainderAxisMovement,
+                    RemainderAxis = collision.RemainderAxis,
+                    ReflectedMovement = collision.BReflectedMovement
+                }
+            };
+            return collisionInfo;
         }
 
         private static void MoveBodies()
