@@ -191,7 +191,7 @@ namespace FlipbookPhysics
             }
         }
 
-        public static bool WillCollideWith(this FBCollider a, Vector2 aMovement, FBCollider b, Vector2 bMovement, out FutureCollision collision)
+        public static bool WillCollideWith(this FBCollider a, Vector2 aMovement, FBCollider b, Vector2 bMovement, out FutureCollision collision, bool ccd)
         {
             var axes = a.CollisionAxes(b);
             axes.AddRange(b.CollisionAxes(a));
@@ -205,7 +205,7 @@ namespace FlipbookPhysics
             aInfo.collisionRange.Y = float.MaxValue;
 
             bool currentlyColliding = true;
-            bool willCollide = true;
+            bool willCollide = ccd;
 
             foreach (var axis in axes)
             {
@@ -261,8 +261,8 @@ namespace FlipbookPhysics
             {
                 //use mtv
                 collision.DidCollide = true;
-                collision.AMovement = aInfo.MTVAxis * (aInfo.MTVAmount / 2);
-                collision.BMovement = aInfo.MTVAxis * (-aInfo.MTVAmount / 2);
+                collision.AMovement = aInfo.MTVAxis * ((aInfo.MTVAmount / 2) + 1);
+                collision.BMovement = aInfo.MTVAxis * ((-aInfo.MTVAmount / 2) - 1);
                 collision.ARemainder = Vector2.Zero;
                 collision.BRemainder = Vector2.Zero;
                 collision.ARemainderAxisMovement = Vector2.Zero;

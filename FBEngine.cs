@@ -14,6 +14,7 @@ namespace FlipbookPhysics
         public static float Speed = 1f;
         public static CollisionCheckOrder Order;
         public static bool move = true;
+        public static bool CCD = true;
 
         static FBEngine() { }
 
@@ -116,7 +117,7 @@ namespace FlipbookPhysics
             foreach (var pair in GetPairs())
             {
                 FutureCollision collisionInfo;
-                if (pair.A.collider.WillCollideWith(pair.A.Movement, pair.B.collider, pair.B.Movement, out collisionInfo))
+                if (pair.A.collider.WillCollideWith(pair.A.Movement, pair.B.collider, pair.B.Movement, out collisionInfo, CCD))
                 {
                     pair.CollisionInfo = collisionInfo;
                     collisions.Add(pair);
