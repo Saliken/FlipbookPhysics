@@ -12,23 +12,6 @@ namespace FlipbookPhysics
         public Vector2 seperatingVector;
         public FBCollider collidedWith;
     }
-
-    public class FutureCollision
-    {
-        public bool DidCollide;
-        public Vector2 RemainderAxis;
-        public Vector2 AMovement;
-        public Vector2 BMovement;
-        public Vector2 ARemainder;
-        public Vector2 BRemainder;
-        public Vector2 ARemainderAxisMovement;
-        public Vector2 BRemainderAxisMovement;
-        public Vector2 AReflectedAxis;
-        public Vector2 BReflectedAxis;
-        public Vector2 AReflectedMovement;
-        public Vector2 BReflectedMovement;
-        public float CollisionBeginning;
-    }
     public class AxisInfo
     {
         public Vector2 collisionRange;
@@ -80,128 +63,13 @@ namespace FlipbookPhysics
             return true;
         }
 
-        public static bool WillCollide(FBCollider a, Vector2 aMovement, FBCollider b, Vector2 bMovement, out FutureCollision collision)
+        public static bool WillCollideWith(this FBCollider a, Vector2 aMovement, FBCollider b, Vector2 bMovement, out MovementInfo aMovementInfo, out MovementInfo bMovementInfo, bool ccd)
         {
             var axes = a.CollisionAxes(b);
             axes.AddRange(b.CollisionAxes(a));
 
-            collision = new FutureCollision();
-            collision.DidCollide = false;
-
-            AxisInfo aInfo = new AxisInfo();
-            aInfo.MTVAmount = float.MaxValue;
-            aInfo.collisionRange.X = float.MinValue;
-            aInfo.collisionRange.Y = float.MaxValue;
-
-            bool currentlyColliding = true;
-            bool willCollide = true;
-
-            foreach (var axis in axes)
-            {
-                float aMin, aMax, bMin, bMax;
-                a.Project(axis, out aMin, out aMax);
-                b.Project(axis, out bMin, out bMax);
-
-                if (currentlyColliding)
-                {
-                    var intervalDistance = IntervalDistance(aMin, aMax, bMin, bMax);
-                    if (intervalDistance < 0) //Currently colliding, save mtv.
-                    {
-                        if ((intervalDistance = Math.Abs(intervalDistance)) < aInfo.MTVAmount)
-                        {
-                            aInfo.MTVAmount = intervalDistance;
-                            aInfo.MTVAxis = axis;
-                        }
-                    }
-                    else
-                    {
-                        currentlyColliding = false;
-                    }
-                }
-
-                if (willCollide)
-                {
-                    var bMovementProjection = Vector2.Dot(axis, bMovement);
-                    var aMovementProjection = Vector2.Dot(axis, aMovement);
-
-                    float begin, end, lessBegin;
-                    if (!CalcCollisionBeginAndEnd(aMin, aMax, aMovementProjection, bMin, bMax, bMovementProjection, out begin, out end, out lessBegin))
-                    {
-                        willCollide = false;
-                    }
-
-                    var rangeMin = begin > aInfo.collisionRange.X ? begin : aInfo.collisionRange.X;
-                    var rangeMax = end < aInfo.collisionRange.Y ? end : aInfo.collisionRange.Y;
-
-                    if (rangeMin > rangeMax)
-                    {
-                        willCollide = false;
-                    }
-
-                    if (aInfo.collisionRange.X < rangeMin)
-                        aInfo.AxisDirection = axis;
-
-                    aInfo.collisionRange = new Vector2(rangeMin, rangeMax);
-                    if (rangeMin == begin)
-                        aInfo.lessCollisionRange = new Vector2(lessBegin, rangeMax);
-                }
-            }
-            if (currentlyColliding) //currently colliding
-            {
-                //use mtv
-                collision.DidCollide = true;
-                collision.AMovement = aInfo.MTVAxis * (aInfo.MTVAmount / 2);
-                collision.BMovement = aInfo.MTVAxis * (-aInfo.MTVAmount / 2);
-                collision.ARemainder = Vector2.Zero;
-                collision.BRemainder = Vector2.Zero;
-                collision.ARemainderAxisMovement = Vector2.Zero;
-                collision.BRemainderAxisMovement = Vector2.Zero;
-                collision.CollisionBeginning = 0;
-                return true;
-            }
-            else if (willCollide) //Will collide
-            {
-                var aFinalMovement = aMovement * aInfo.lessCollisionRange.X;
-                var bFinalMovement = bMovement * aInfo.lessCollisionRange.X;
-
-                var aMoveRemainder = aMovement - aFinalMovement;
-                var bMoveRemainder = bMovement - bFinalMovement;
-
-                var remainderAxis = new Vector2(-aInfo.AxisDirection.Y, aInfo.AxisDirection.X);
-
-                var aRemainderAmount = Vector2.Dot(aMoveRemainder, remainderAxis);
-                var bRemainderAmount = Vector2.Dot(bMoveRemainder, remainderAxis);
-
-                var aRemainderMovement = (aRemainderAmount * remainderAxis);
-                var bRemainderMovement = (bRemainderAmount * remainderAxis);
-
-                var aMove = aFinalMovement + aRemainderMovement;
-                var bMove = bFinalMovement + bRemainderMovement;
-
-                collision.DidCollide = true;
-                collision.AMovement = aFinalMovement;
-                collision.BMovement = bFinalMovement;
-                collision.ARemainder = aMoveRemainder;
-                collision.BRemainder = bMoveRemainder;
-                collision.RemainderAxis = remainderAxis;
-                collision.ARemainderAxisMovement = aRemainderMovement;
-                collision.BRemainderAxisMovement = bRemainderMovement;
-                collision.CollisionBeginning = aInfo.lessCollisionRange.X;
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public static bool WillCollideWith(this FBCollider a, Vector2 aMovement, FBCollider b, Vector2 bMovement, out FutureCollision collision, bool ccd)
-        {
-            var axes = a.CollisionAxes(b);
-            axes.AddRange(b.CollisionAxes(a));
-
-            collision = new FutureCollision();
-            collision.DidCollide = false;
+            aMovementInfo = null;
+            bMovementInfo = null;
 
             AxisInfo aInfo = new AxisInfo();
             aInfo.MTVAmount = float.MaxValue;
@@ -264,14 +132,35 @@ namespace FlipbookPhysics
             if (currentlyColliding) //currently colliding
             {
                 //use mtv
-                collision.DidCollide = true;
-                collision.AMovement = aInfo.MTVAxis * ((aInfo.MTVAmount / 2) + 1);
-                collision.BMovement = aInfo.MTVAxis * ((-aInfo.MTVAmount / 2) - 1);
-                collision.ARemainder = Vector2.Zero;
-                collision.BRemainder = Vector2.Zero;
-                collision.ARemainderAxisMovement = Vector2.Zero;
-                collision.BRemainderAxisMovement = Vector2.Zero;
-                collision.CollisionBeginning = 0;
+                var aMoveLength = Math.Abs(aMovement.LengthSquared());
+                var bMoveLength = Math.Abs(bMovement.LengthSquared());
+
+                var totalMovement = aMoveLength + bMoveLength;
+                double aMovePercent, bMovePercent;
+                if (totalMovement != 0)
+                {
+                    aMovePercent = aMoveLength / totalMovement;
+                    bMovePercent = bMoveLength / totalMovement;
+                }
+                else
+                {
+                    aMovePercent = 0.5f;
+                    bMovePercent = 0.5f;
+                }
+
+                var aSeparation = aInfo.MTVAxis * ((aInfo.MTVAmount * (float)aMovePercent) + 1);
+                var bSeparation = aInfo.MTVAxis * ((-aInfo.MTVAmount * (float)bMovePercent) - 1);
+
+                aMovementInfo = new MovementInfo()
+                {
+                    ValidMovement = aSeparation,
+                    InteriorCollision = true
+                };
+                bMovementInfo = new MovementInfo()
+                {
+                    ValidMovement = bSeparation,
+                    InteriorCollision = true                   
+                };
                 return true;
             }
             else if(willCollide) //Will collide
@@ -295,19 +184,23 @@ namespace FlipbookPhysics
 
                 var aReflectedMovement = Vector2.Reflect(aFinalMovement, aInfo.AxisDirection);
                 var bReflectedMovement = Vector2.Reflect(bFinalMovement, aInfo.AxisDirection);
-                
 
-                collision.DidCollide = true;
-                collision.AMovement = aFinalMovement;
-                collision.BMovement = bFinalMovement;
-                collision.ARemainder = aMoveRemainder;
-                collision.BRemainder = bMoveRemainder;
-                collision.RemainderAxis = remainderAxis;
-                collision.ARemainderAxisMovement = aRemainderMovement;
-                collision.BRemainderAxisMovement = bRemainderMovement;
-                collision.CollisionBeginning = aInfo.lessCollisionRange.X;
-                collision.AReflectedMovement = aReflectedMovement;
-                collision.BReflectedMovement = bReflectedMovement;
+                aMovementInfo = new MovementInfo()
+                {
+                    ValidMovement = aFinalMovement,
+                    ValidMovementPercent = aInfo.lessCollisionRange.X,
+                    RemainderAxis = remainderAxis,
+                    RemainderAxisMovement = aRemainderMovement,
+                    ReflectedMovement = aReflectedMovement
+                };
+                bMovementInfo = new MovementInfo()
+                {
+                    ValidMovement = bFinalMovement,
+                    ValidMovementPercent = aInfo.lessCollisionRange.X,
+                    RemainderAxis = remainderAxis,
+                    RemainderAxisMovement = bRemainderMovement,
+                    ReflectedMovement = bReflectedMovement
+                };
                 return true;
             }
             else

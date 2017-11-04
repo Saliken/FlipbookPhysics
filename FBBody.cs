@@ -60,11 +60,11 @@ namespace FlipbookPhysics
             FBEngine.AddMovedBody(this);
         }
 
-        public void BeforeCollision(FutureCollision collision)
+        public void BeforeCollision(CollisionInfo collision)
         {
             OnBeforeCollision?.Invoke(collision);
         }
-        public void AfterCollision(FutureCollision collision)
+        public void AfterCollision(CollisionInfo collision)
         {
             OnAfterCollision?.Invoke(collision);  
         }

@@ -1,5 +1,5 @@
 ﻿
 namespace FlipbookPhysics
 {
-    public delegate void CollisionEventHandler(FutureCollision collisionInfo);
+    public delegate void CollisionEventHandler(CollisionInfo collisionInfo);
 }

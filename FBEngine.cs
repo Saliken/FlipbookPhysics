@@ -42,14 +42,14 @@ namespace FlipbookPhysics
             {
                 if (move)
                 {
-                    collision.A.BeforeCollision(collision.CollisionInfo);
-                    collision.B.BeforeCollision(collision.CollisionInfo);
+                    collision.BodyA.BeforeCollision(collision);
+                    collision.BodyB.BeforeCollision(collision);
 
-                    collision.A.SetMove(collision.CollisionInfo.AMovement.X, collision.CollisionInfo.AMovement.Y);
-                    collision.B.SetMove(collision.CollisionInfo.BMovement.X, collision.CollisionInfo.BMovement.Y);
+                    collision.BodyA.SetMove(collision.AMovement.ValidMovement);
+                    collision.BodyB.SetMove(collision.BMovement.ValidMovement);
 
-                    collision.A.AfterCollision(collision.CollisionInfo);
-                    collision.B.AfterCollision(collision.CollisionInfo);
+                    collision.BodyA.AfterCollision(collision);
+                    collision.BodyB.AfterCollision(collision);
                 }
             }
 
@@ -65,42 +65,18 @@ namespace FlipbookPhysics
             {
                 if (move)
                 {
-                    collision.A.BeforeCollision(collision.CollisionInfo);
-                    collision.B.BeforeCollision(collision.CollisionInfo);
+                    collision.BodyA.BeforeCollision(collision);
+                    collision.BodyB.BeforeCollision(collision);
 
-                    collision.A.Position += collision.CollisionInfo.AMovement;
-                    collision.A.SetMove(collision.CollisionInfo.ARemainderAxisMovement.X, collision.CollisionInfo.ARemainderAxisMovement.Y);
-                    collision.B.Position += collision.CollisionInfo.BMovement;
-                    collision.B.SetMove(collision.CollisionInfo.BRemainderAxisMovement.X, collision.CollisionInfo.BRemainderAxisMovement.Y);
+                    collision.BodyA.Position += collision.AMovement.ValidMovement;
+                    collision.BodyA.SetMove(collision.AMovement.RemainderAxisMovement);
+                    collision.BodyB.Position += collision.BMovement.ValidMovement;
+                    collision.BodyB.SetMove(collision.BMovement.RemainderAxisMovement);
 
-                    collision.A.AfterCollision(collision.CollisionInfo);
-                    collision.B.AfterCollision(collision.CollisionInfo);
+                    collision.BodyA.AfterCollision(collision);
+                    collision.BodyB.AfterCollision(collision);
                 }
             }
-        }
-
-        private static CollisionInfo ConvertToCollisionInfo(FutureCollision collision, FBBody bodyA, FBBody bodyB)
-        {
-            var collisionInfo = new CollisionInfo()
-            {
-                BodyA = bodyA,
-                BodyB = bodyB,
-                AMovement = new MovementInfo()
-                {
-                    ValidMovement = collision.AMovement,
-                    RemainderMovement = collision.ARemainderAxisMovement,
-                    RemainderAxis = collision.RemainderAxis,
-                    ReflectedMovement = collision.AReflectedMovement
-                },
-                BMovement = new MovementInfo()
-                {
-                    ValidMovement = collision.BMovement,
-                    RemainderMovement = collision.BRemainderAxisMovement,
-                    RemainderAxis = collision.RemainderAxis,
-                    ReflectedMovement = collision.BReflectedMovement
-                }
-            };
-            return collisionInfo;
         }
 
         private static void MoveBodies()
@@ -114,42 +90,43 @@ namespace FlipbookPhysics
                 }
             }
         }
-        private static List<FBPotentialCollisionPair> FilterEarliestPairs(List<FBPotentialCollisionPair> pairs)
+        private static List<CollisionInfo> FilterEarliestPairs(List<CollisionInfo> pairs)
         {
             //First sort
-            var ordered = pairs.OrderBy(x => x.CollisionInfo.CollisionBeginning);
+            var ordered = pairs.OrderBy(x => x.AMovement.ValidMovementPercent);
 
-            List<FBPotentialCollisionPair> earliestPairs = new List<FBPotentialCollisionPair>();
+            List<CollisionInfo> earliestPairs = new List<CollisionInfo>();
             List<FBBody> completedPairs = new List<FBBody>();
             
             foreach(var pair in ordered)
             {
-                if(!completedPairs.Contains(pair.A) && !completedPairs.Contains(pair.B))
+                if(!completedPairs.Contains(pair.BodyA) && !completedPairs.Contains(pair.BodyB))
                 { 
                     earliestPairs.Add(pair);
-                    completedPairs.Add(pair.A);
-                    completedPairs.Add(pair.B);
+                    completedPairs.Add(pair.BodyA);
+                    completedPairs.Add(pair.BodyB);
                 }
             }
             return earliestPairs;
         }
-        private static List<FBPotentialCollisionPair> GetCollisions()
+        private static List<CollisionInfo> GetCollisions()
         {
-            var collisions = new List<FBPotentialCollisionPair>();
+            var collisions = new List<CollisionInfo>();
             foreach (var pair in GetPairs())
             {
-                FutureCollision collisionInfo;
-                if (pair.A.collider.WillCollideWith(pair.A.Movement, pair.B.collider, pair.B.Movement, out collisionInfo, CCD))
+                if (pair.BodyA.collider.WillCollideWith(pair.BodyA.Movement, pair.BodyB.collider, pair.BodyB.Movement, out var aMovementInfo, out var bMovementInfo, CCD))
                 {
-                    pair.CollisionInfo = collisionInfo;
+                    pair.AMovement = aMovementInfo;
+                    pair.BMovement = bMovementInfo;
+
                     collisions.Add(pair);
                 }
             }
             return collisions;
         }
-        private static List<FBPotentialCollisionPair> GetPairs()
+        private static List<CollisionInfo> GetPairs()
         {
-            var pairs = new List<FBPotentialCollisionPair>();
+            var pairs = new List<CollisionInfo>();
             for(int i = 0; i < bodies.Count; i++)
             {
                 if (bodies[i].Active)
@@ -161,7 +138,7 @@ namespace FlipbookPhysics
 
                         if (bodies[j].Active)
                         {
-                            pairs.Add(new FBPotentialCollisionPair() { A = bodies[i], B = bodies[j] });
+                            pairs.Add(new CollisionInfo() { BodyA = bodies[i], BodyB = bodies[j] });
                         }
                     }
                 }

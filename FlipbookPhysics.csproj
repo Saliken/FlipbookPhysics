@@ -54,7 +54,6 @@
     <Compile Include="FBBodyFactory.cs" />
     <Compile Include="FBBodyType.cs" />
     <Compile Include="FBEngine.cs" />
-    <Compile Include="FBPotentialCollisionPair.cs" />
     <Compile Include="FBQuadTree.cs" />
     <Compile Include="FBQuadTreeNode.cs" />
     <Compile Include="Verlet\IVerletCollidable.cs" />
