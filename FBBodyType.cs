@@ -8,8 +8,8 @@ namespace FlipbookPhysics
 {
     public enum FBBodyType
     {
-        Pushover,
-        EqualPush,
-        ForcePush
+        Dynamic,
+        Static,
+        Kinematic
     }
 }

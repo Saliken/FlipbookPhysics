@@ -14,6 +14,7 @@ namespace FlipbookPhysics
         public bool Active = true;
         public FBCollider collider;
         public Rectangle AABB;
+        public FBBodyType type;
 
         public object UserData;
 
@@ -28,8 +29,9 @@ namespace FlipbookPhysics
         public event CollisionEventHandler OnAfterCollision;
         
 
-        public FBBody()
+        public FBBody(FBBodyType type = FBBodyType.Dynamic)
         {
+            this.type = type;
             FBEngine.bodies.Add(this);
         }
         
