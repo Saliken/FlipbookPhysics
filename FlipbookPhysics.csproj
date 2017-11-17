@@ -53,6 +53,7 @@
     <Compile Include="FBBody.cs" />
     <Compile Include="FBBodyFactory.cs" />
     <Compile Include="FBBodyType.cs" />
+    <Compile Include="FBBresenhamHelper.cs" />
     <Compile Include="FBEngine.cs" />
     <Compile Include="FBQuadTree.cs" />
     <Compile Include="FBQuadTreeNode.cs" />

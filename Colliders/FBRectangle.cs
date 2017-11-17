@@ -46,6 +46,30 @@ namespace FlipbookPhysics
             this.height = height;
         }
 
+        public override Rectangle AABB()
+        {
+            var points = Points;
+            var x = points[0].X;
+            var y = points[0].Y;
+            var x2 = x;
+            var y2 = y;
+
+            foreach (var point in points)
+            {
+                if (point.X < x)
+                    x = point.X;
+                else if (point.X > x2)
+                    x2 = point.X;
+
+                if (point.Y < y)
+                    y = point.Y;
+                else if (point.Y > y2)
+                    y2 = point.Y;
+            }
+
+            return new Rectangle((int)x, (int)y, (int)(x2 - x), (int)(y2 - y));
+        }
+
         public override List<Vector2> CollisionAxes(FBCollider otherShape)
         {
             return Lines.Select(x => x.NormalRight).ToList();

@@ -35,6 +35,30 @@ namespace FlipbookPhysics
             }
         }
 
+        public override Rectangle AABB()
+        {
+            var movedPoints = MovedPoints;
+            var x = movedPoints[0].X;
+            var y = movedPoints[0].Y;
+            var x2 = x;
+            var y2 = y;
+
+            foreach(var point in MovedPoints)
+            {
+                if (point.X < x)
+                    x = point.X;
+                else if(point.X > x2)
+                    x2 = point.X;
+
+                if (point.Y < y)
+                    y = point.Y;
+                else if (point.Y > y2)
+                    y2 = point.Y;
+            }
+
+            return new Rectangle((int)x, (int)y, (int)(x2 - x), (int)(y2 - y));
+        }
+
         public override Vector2 NearestPoint(Vector2 to)
         {
             Vector2 closestPoint = Vector2.Zero;

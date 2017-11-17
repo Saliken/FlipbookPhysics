@@ -17,6 +17,15 @@ namespace FlipbookPhysics
             Position = position;
         }
 
+        public override Rectangle AABB()
+        {
+            var x = Position.X - Radius;
+            var y = Position.Y - Radius;
+            var width = Position.X + Radius + x;
+            var height = Position.Y + Radius - y;
+            return new Rectangle((int)x, (int)y, (int)width, (int)height);
+        }
+
         public override Vector2 NearestPoint(Vector2 to)
         {
             return Position;

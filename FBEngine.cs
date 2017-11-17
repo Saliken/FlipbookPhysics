@@ -22,13 +22,14 @@ namespace FlipbookPhysics
 
         public static void Initialize(Rectangle worldBoundaries)
         {
+            bodies = new List<FBBody>();
             bodiesHash = new FBSpatialHash<FBBody>(100);
             movedBodies = new List<FBBody>();
         }
 
         public static void AddBody(FBBody body)
         {
-            bodies = new List<FBBody>();
+            bodies.Add(body);
         }
 
         public static void AddMovedBody(FBBody body)
@@ -176,7 +177,8 @@ namespace FlipbookPhysics
             var potentials = bodiesHash.GetRectangle(sweptAABB);
             foreach(var p in potentials)
             {
-                pairs.Add(new CollisionInfo() { BodyA = firstBody, BodyB = p });
+                if(p != firstBody)
+                    pairs.Add(new CollisionInfo() { BodyA = firstBody, BodyB = p });
             }
             return pairs;
         }

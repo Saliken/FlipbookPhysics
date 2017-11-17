@@ -16,6 +16,7 @@ namespace FlipbookPhysics
 
         public FBSpatialHash(int bucketDimension)
         {
+            hash = new List2D<List<T>>();
             this.bucketDimension = bucketDimension;
         }
 
