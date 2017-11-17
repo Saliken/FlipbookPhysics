@@ -37,29 +37,35 @@ namespace FlipbookPhysics
         
         public void Move(float x, float y)
         {
-            MovementX += x;
-            MovementY += y;
-
-            FBEngine.AddMovedBody(this);
+            if (type == FBBodyType.Dynamic)
+            {
+                MovementX += x;
+                MovementY += y;
+            }
         }
         public void Move(Vector2 movement)
         {
-            MovementX += movement.X;
-            MovementY += movement.Y;
-
-            FBEngine.AddMovedBody(this);
+            if (type == FBBodyType.Dynamic)
+            {
+                MovementX += movement.X;
+                MovementY += movement.Y;
+            }
         }
         public void SetMove(float x, float y)
         {
-            MovementX = x;
-            MovementY = y;
-            FBEngine.AddMovedBody(this);
+            if (type == FBBodyType.Dynamic)
+            {
+                MovementX = x;
+                MovementY = y;
+            }
         }
         public void SetMove(Vector2 movement)
         {
-            MovementX = movement.X;
-            MovementY = movement.Y;
-            FBEngine.AddMovedBody(this);
+            if (type == FBBodyType.Dynamic)
+            {
+                MovementX = movement.X;
+                MovementY = movement.Y;
+            }
         }
 
         public void BeforeCollision(CollisionInfo collision)

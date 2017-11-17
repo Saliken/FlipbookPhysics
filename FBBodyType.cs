@@ -10,6 +10,6 @@ namespace FlipbookPhysics
     {
         Dynamic,
         Static,
-        Kinematic
+        Trigger
     }
 }

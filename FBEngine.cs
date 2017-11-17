@@ -12,7 +12,6 @@ namespace FlipbookPhysics
         public static List<FBBody> bodies;
         public static FBSpatialHash<FBBody> bodiesHash;
         
-        public static List<FBBody> movedBodies;
         public static float Speed = 1f;
         public static CollisionCheckOrder Order;
         public static bool move = true;
@@ -24,17 +23,11 @@ namespace FlipbookPhysics
         {
             bodies = new List<FBBody>();
             bodiesHash = new FBSpatialHash<FBBody>(100);
-            movedBodies = new List<FBBody>();
         }
 
         public static void AddBody(FBBody body)
         {
             bodies.Add(body);
-        }
-
-        public static void AddMovedBody(FBBody body)
-        {
-            movedBodies.Add(body);
         }
 
         public static void Update(GameTime gameTime)
@@ -86,10 +79,17 @@ namespace FlipbookPhysics
                     collision.BodyA.BeforeCollision(collision);
                     collision.BodyB.BeforeCollision(collision);
 
-                    collision.BodyA.Position += collision.AMovement.ValidMovement;
-                    collision.BodyA.SetMove(collision.AMovement.RemainderAxisMovement);
-                    collision.BodyB.Position += collision.BMovement.ValidMovement;
-                    collision.BodyB.SetMove(collision.BMovement.RemainderAxisMovement);
+                    if (collision.BodyA.type == FBBodyType.Dynamic)
+                    {
+                        collision.BodyA.Position += collision.AMovement.ValidMovement;
+                        collision.BodyA.SetMove(collision.AMovement.RemainderAxisMovement);
+                    }
+
+                    if (collision.BodyB.type == FBBodyType.Dynamic)
+                    {
+                        collision.BodyB.Position += collision.BMovement.ValidMovement;
+                        collision.BodyB.SetMove(collision.BMovement.RemainderAxisMovement);
+                    }
 
                     collision.BodyA.AfterCollision(collision);
                     collision.BodyB.AfterCollision(collision);
@@ -103,14 +103,16 @@ namespace FlipbookPhysics
             {
                 if (move)
                 {
-                    body.Position += body.Movement;
-                    body.SetMove(0, 0);
+                    if (body.type == FBBodyType.Dynamic)
+                    {
+                        body.Position += body.Movement;                            
+                        body.SetMove(0, 0);
+                    }
                 }
             }
         }
         private static List<CollisionInfo> FilterEarliestPairs(List<CollisionInfo> pairs)
         {
-            //First sort
             var ordered = pairs.OrderBy(x => x.AMovement.ValidMovementPercent);
 
             List<CollisionInfo> earliestPairs = new List<CollisionInfo>();
@@ -118,6 +120,7 @@ namespace FlipbookPhysics
             
             foreach(var pair in ordered)
             {
+                //TODO: Handle triggers as non-colliding.
                 if(!completedPairs.Contains(pair.BodyA) && !completedPairs.Contains(pair.BodyB))
                 { 
                     earliestPairs.Add(pair);
@@ -148,7 +151,10 @@ namespace FlipbookPhysics
 
             foreach(var body in bodies)
             {
-                pairs.AddRange(GetPairsForBody(body));
+                if (body.type == FBBodyType.Dynamic)
+                {
+                    pairs.AddRange(GetPairsForBody(body));
+                }
             }
 
             return pairs;
