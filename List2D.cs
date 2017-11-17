@@ -8,42 +8,59 @@ namespace FlipbookPhysics
 {
     public class List2D<T>
     {
-        private List<T> xPositiveYPositive;
-        private List<T> xNegativeYNegative;
-        private List<T> xPositiveYNegative;
-        private List<T> xNegativeYPositive;
+        private List<List<T>> xPositiveYPositive;
+        private List<List<T>> xNegativeYNegative;
+        private List<List<T>> xPositiveYNegative;
+        private List<List<T>> xNegativeYPositive;
 
         public List2D()
         {
-            xPositiveYNegative = new List<T>();
-            xNegativeYPositive = new List<T>();
-            xPositiveYPositive = new List<T>();
-            xNegativeYNegative = new List<T>();
+            xPositiveYNegative = new List<List<T>>();
+            xNegativeYPositive = new List<List<T>>();
+            xPositiveYPositive = new List<List<T>>();
+            xNegativeYNegative = new List<List<T>>();
         }
 
         public void AddAt(T item, int x, int y)
         {
-            if(x >= 0)
+            var list = GetList(x, y);
+            var absX = Math.Abs(x);
+            var absY = Math.Abs(y);
+
+            var column = list[absX];
+            if (column == null)
+                list[absX] = new List<T>();
+
+            list[absX][absY] = item;
+        }
+        public T GetAt(int x, int y)
+        {
+            var list = GetList(x, y);
+            var absX = Math.Abs(x);
+            var absY = Math.Abs(y);
+
+            var column = list[absX];
+            if (column != null)
+                return column[absY];
+
+            return default(T);
+        }
+
+        protected List<List<T>> GetList(int x, int y)
+        {
+            if (x >= 0)
             {
                 if (y >= 0)
-                {
-                    
-                }
+                    return xPositiveYPositive;
                 else
-                {
-
-                }
+                    return xPositiveYNegative;
             }
             else
             {
-                if(y >= 0)
-                {
-
-                }
+                if (y >= 0)
+                    return xNegativeYPositive;
                 else
-                {
-
-                }
+                    return xNegativeYNegative;
             }
         }
 
@@ -51,29 +68,11 @@ namespace FlipbookPhysics
         {
             get
             {
-                if(x >= 0)
-                {
-                    if(y >= 0)
-                    {
-
-                    }
-                    else
-                    {
-
-                    }
-                }
-                else
-                {
-                    if(y >= 0)
-                    {
-
-                    }
-                    else
-                    {
-
-                    }
-                }
-                return default(T);
+                return GetAt(x, y);
+            }
+            set
+            {
+                AddAt(value, x, y);
             }
         }
     }

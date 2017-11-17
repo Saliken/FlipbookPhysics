@@ -9,6 +9,9 @@ namespace FlipbookPhysics
 {
     public static class FBEngine
     {
+        public static List<FBBody> staticBodies;
+        public static List<FBBody> dynamicBodies;
+        
         public static List<FBBody> bodies;
         public static List<FBBody> movedBodies;
         public static float Speed = 1f;
@@ -22,6 +25,18 @@ namespace FlipbookPhysics
         {
             bodies = new List<FBBody>();
             movedBodies = new List<FBBody>();
+        }
+
+        public static void AddBody(FBBody body)
+        {
+            if(body.type == FBBodyType.Dynamic)
+            {
+                dynamicBodies.Add(body);
+            }
+            else if (body.type == FBBodyType.Static)
+            {
+                staticBodies.Add(body);
+            }
         }
 
         public static void AddMovedBody(FBBody body)
