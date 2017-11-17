@@ -46,6 +46,14 @@ namespace FlipbookPhysics
             return default(T);
         }
 
+        public void Clear()
+        {
+            xPositiveYNegative.Clear();
+            xPositiveYPositive.Clear();
+            xNegativeYPositive.Clear();
+            xNegativeYNegative.Clear();
+        }
+
         protected List<List<T>> GetList(int x, int y)
         {
             if (x >= 0)

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FlipbookPhysics
 {
-    class FBSpatialHash<T>
+    public class FBSpatialHash<T>
     {
         protected int bucketDimension;
 
@@ -40,7 +40,10 @@ namespace FlipbookPhysics
                 }
             }
         }
-
+        public void Clear()
+        {
+            hash.Clear();
+        }
         #region Get Buckets
         public List<T> Get(int x, int y)
         {
