@@ -122,7 +122,9 @@ namespace FlipbookPhysics
                     }
 
                     if (aInfo.collisionRange.X < rangeMin)
+                    {
                         aInfo.AxisDirection = axis;
+                    }
 
                     aInfo.collisionRange = new Vector2(rangeMin, rangeMax);
                     if (rangeMin == begin)
@@ -165,42 +167,74 @@ namespace FlipbookPhysics
             }
             else if(willCollide) //Will collide
             {
-                var aFinalMovement = aMovement * aInfo.lessCollisionRange.X;
-                var bFinalMovement = bMovement * aInfo.lessCollisionRange.X;
+                //The last axis that was collided with causing the collision to actually occur.
+                var collisionAxis = aInfo.AxisDirection;
 
-                var aMoveRemainder = aMovement - aFinalMovement;
-                var bMoveRemainder = bMovement - bFinalMovement;
-
+                //The inverse of the collision axis, the allowed movement if blocked.
                 var remainderAxis = new Vector2(-aInfo.AxisDirection.Y, aInfo.AxisDirection.X);
 
-                var aRemainderAmount = Vector2.Dot(aMoveRemainder, remainderAxis);
-                var bRemainderAmount = Vector2.Dot(bMoveRemainder, remainderAxis);
+                //Get the valid movement for the collision and leftover.
+                var aMovementTilCollision = aMovement * aInfo.lessCollisionRange.X;
+                var bMovementTilCollision = bMovement * aInfo.lessCollisionRange.X;
+                var aInitialMovementRemainder = aMovement - aMovementTilCollision;
+                var bInitialMovementRemainder = bMovement - bMovementTilCollision;
+                var aMovementRemainderAlongAxis = Vector2.Dot(aInitialMovementRemainder, remainderAxis) * remainderAxis;
+                var bMovementRemainderAlongAxis = Vector2.Dot(bInitialMovementRemainder, remainderAxis) * remainderAxis;
 
-                var aRemainderMovement = (aRemainderAmount * remainderAxis);
-                var bRemainderMovement = (bRemainderAmount * remainderAxis);
+                var aMovementRemainder = aMovementRemainderAlongAxis;
+                var bMovementRemainder = bMovementRemainderAlongAxis;
 
-                var aMove = aFinalMovement + aRemainderMovement;
-                var bMove = bFinalMovement + bRemainderMovement;
+                //Determine if an object is allowed to continue moving.
+                var aCenter = Vector2.Dot(a.Position, collisionAxis);
+                var aVel = Vector2.Dot(aMovement, collisionAxis);
+                var bCenter = Vector2.Dot(b.Position, collisionAxis);
+                var bVel = Vector2.Dot(bMovement, collisionAxis);
+                
+                if (aVel > 0 && bVel > 0)
+                {
+                    if (aCenter > bCenter)
+                    {
+                        aMovementRemainder = aMovement - aMovementTilCollision;
+                    }
+                    else
+                    {
+                        bMovementRemainder = bMovement - bMovementTilCollision;
+                    }
+                }
+                else if (aVel < 0 && bVel < 0)
+                {
+                    if (aCenter < bCenter)
+                    {
+                        aMovementRemainder = aMovement - aMovementTilCollision;
+                    }
+                    else
+                    {
+                        bMovementRemainder = bMovement - bMovementTilCollision;
+                    }
+                }
 
-                var aReflectedMovement = Vector2.Reflect(aFinalMovement, aInfo.AxisDirection);
-                var bReflectedMovement = Vector2.Reflect(bFinalMovement, aInfo.AxisDirection);
+                var aMove = aMovementTilCollision + aMovementRemainder;
+                var bMove = bMovementTilCollision + bMovementRemainder;
+
+                var aReflectedMovement = Vector2.Reflect(aMovementTilCollision, aInfo.AxisDirection);
+                var bReflectedMovement = Vector2.Reflect(bMovementTilCollision, aInfo.AxisDirection);
 
                 aMovementInfo = new MovementInfo()
                 {
-                    ValidMovement = aFinalMovement,
+                    ValidMovement = aMovementTilCollision,
                     ValidMovementPercent = aInfo.lessCollisionRange.X,
                     RemainderAxis = remainderAxis,
-                    RemainderAxisMovement = aRemainderMovement,
+                    RemainderAxisMovement = aMovementRemainder,
                     ReflectedMovement = aReflectedMovement
                 };
                 bMovementInfo = new MovementInfo()
                 {
-                    ValidMovement = bFinalMovement,
+                    ValidMovement = bMovementTilCollision,
                     ValidMovementPercent = aInfo.lessCollisionRange.X,
                     RemainderAxis = remainderAxis,
-                    RemainderAxisMovement = bRemainderMovement,
+                    RemainderAxisMovement = bMovementRemainder,
                     ReflectedMovement = bReflectedMovement
-                };
+               };
                 return true;
             }
             else
@@ -236,9 +270,10 @@ namespace FlipbookPhysics
             if (beginC == 0 && endC == 0) //Never collides
                 return false;
 
-            if(aMovement != bMovement)
+            if (aMovement != bMovement)
                 //Get approximately a pixel distance in order to keep objects separated.
-                lessBegin = beginC - Math.Abs(0.85f / (aMovement - bMovement));
+                //lessBegin = beginC - Math.Abs(0.85f / (aMovement - bMovement));
+                lessBegin = beginC;
             else
             {
                 lessBegin = beginC;
@@ -251,22 +286,32 @@ namespace FlipbookPhysics
         }
         private static float CalcCollisionTime(float a, float aMovement, float b, float bMovement)
         {
-            var distance = b - a;
-            if (distance > aMovement)
-                distance = aMovement;
+            ///Formula
+            ///T = D / R
+            ///T = Time
+            ///D = Distance
+            ///R = Rate
             
-            float c;
-            if (aMovement != bMovement)
-                c = (b - a) * (1 / (aMovement - bMovement));
-            else
-                c = (b - a);
-           
-            if (c < 0)
-                c = 0;
-            if (c > 1)
-                c = 1;
-            return c;
+            float R = 0;
+            float D = Math.Abs(a - b);
 
+            //Points moving in the same direction.
+            if(aMovement >= 0 && bMovement >= 0 || aMovement < 0 && bMovement < 0)
+            {
+                R = Math.Abs(aMovement - bMovement);
+            }
+            else
+            {
+                R = Math.Abs(aMovement + bMovement);
+            }
+
+            float T = D / R;
+            if (T < 0)
+                T = 0;
+            if (T > 1)
+                T = 1;
+
+            return T;
         }
 
         private static Vector2 ValidateAxis(Vector2 direction, Vector2 axis)
