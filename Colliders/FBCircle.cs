@@ -14,7 +14,7 @@ namespace FlipbookPhysics
         public FBCircle(float radius, Vector2 position)
         {
             Radius = radius;
-            Position = position;
+            ParentPositionOffset = position;
         }
 
         public override Rectangle AABB()

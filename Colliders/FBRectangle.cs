@@ -41,7 +41,7 @@ namespace FlipbookPhysics
 
         public FBRectangle(float x, float y, float width, float height)
         {
-            this.Position = new Vector2(x, y);
+            this.ParentPositionOffset = new Vector2(x, y);
             this.width = width;
             this.height = height;
         }

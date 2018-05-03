@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using FlipbookPhysics.CollisionResponseCreators;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,10 +18,19 @@ namespace FlipbookPhysics
         public static CollisionCheckOrder Order;
         public static bool move = true;
         public static bool CCD = true;
+        public static bool Debug { get; set; }
+
+        private static ICollisionResponseCreator collisionResponseCreator;
 
         static FBEngine() { }
 
         public static void Initialize(Rectangle worldBoundaries)
+        {
+            bodies = new List<FBBody>();
+            bodiesHash = new FBSpatialHash<FBBody>(100);
+        }
+
+        public static void Clear()
         {
             bodies = new List<FBBody>();
             bodiesHash = new FBSpatialHash<FBBody>(100);
@@ -35,6 +46,30 @@ namespace FlipbookPhysics
             FillSpatialHash();
             Iterate();
             Finish();
+        }
+
+        public static void Draw()
+        {
+            if(Debug)
+            {
+                FBDebugDraw.SpriteBatch.Begin();
+                foreach(var body in bodies)
+                {
+                    if (body.collider is FBCircle circle)
+                    {
+                        FBDebugDraw.Circle(circle.Position, circle.Radius, Color.White);
+                    }
+                    else if (body.collider is FBRectangle rectangle)
+                    {
+                        FBDebugDraw.Rectangle(rectangle.Position, rectangle.width, rectangle.height, Color.White);
+                    }
+                    else if (body.collider is FBPolygon polygon)
+                    {
+                        FBDebugDraw.Polygon(polygon, Color.White);
+                    }
+                }
+                FBDebugDraw.SpriteBatch.End();
+            }
         }
 
         private static void FillSpatialHash()
@@ -74,26 +109,7 @@ namespace FlipbookPhysics
 
             foreach (var collision in earliestCollisions)
             {
-                if (move)
-                {
-                    collision.BodyA.BeforeCollision(collision);
-                    collision.BodyB.BeforeCollision(collision);
-
-                    if (collision.BodyA.type == FBBodyType.Dynamic)
-                    {
-                        collision.BodyA.Position += collision.AMovement.ValidMovement;
-                        collision.BodyA.SetMove(collision.AMovement.RemainderAxisMovement);
-                    }
-
-                    if (collision.BodyB.type == FBBodyType.Dynamic)
-                    {
-                        collision.BodyB.Position += collision.BMovement.ValidMovement;
-                        collision.BodyB.SetMove(collision.BMovement.RemainderAxisMovement);
-                    }
-
-                    collision.BodyA.AfterCollision(collision);
-                    collision.BodyB.AfterCollision(collision);
-                }
+                collisionResponseCreator.MakeResponse(collision);
             }
         }
 
@@ -135,13 +151,13 @@ namespace FlipbookPhysics
             var collisions = new List<CollisionInfo>();
             foreach (var pair in GetPairs())
             {
-                if (pair.BodyA.collider.WillCollideWith(pair.BodyA.Movement, pair.BodyB.collider, pair.BodyB.Movement, out var aMovementInfo, out var bMovementInfo, CCD))
-                {
-                    pair.AMovement = aMovementInfo;
-                    pair.BMovement = bMovementInfo;
+                //if (pair.BodyA.collider.WillCollideWith(pair.BodyA.Movement, pair.BodyB.collider, pair.BodyB.Movement, out var aMovementInfo, out var bMovementInfo, CCD))
+                //{
+                //    pair.AMovement = aMovementInfo;
+                //    pair.BMovement = bMovementInfo;
 
-                    collisions.Add(pair);
-                }
+                //    collisions.Add(pair);
+                //}
             }
             return collisions;
         }

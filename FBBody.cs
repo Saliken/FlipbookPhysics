@@ -18,8 +18,8 @@ namespace FlipbookPhysics
 
         public object UserData;
 
-        public Vector2 Position { get { return collider.Position; } set { collider.Position = value; } }
-        public float Rotation { get { return collider.Rotation; } set { collider.Rotation = value; } }
+        public Vector2 Position { get { return collider.Position; } set {  } }
+        public float Rotation { get { return collider.Rotation; } set {  } }
 
         public float MovementX { get; set; }
         public float MovementY { get; set; }

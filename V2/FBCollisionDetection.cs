@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FlipbookPhysics
+namespace FlipbookPhysics.V2
 {
-    public class Collision
+    public class FBCollision
     {
         public Vector2 seperatingVector;
         public FBCollider collidedWith;
     }
-    public class AxisInfo
+    public class FBAxisInfo
     {
         public Vector2 collisionRange;
         public Vector2 lessCollisionRange;
@@ -21,14 +21,14 @@ namespace FlipbookPhysics
         public float MTVAmount;
         public Vector2 MTVAxis;
     }
-    public static class ColliderChecker
+    public static class FBCollisionDetection
     {
 
         public static bool CollidesWith(this FBCollider a, FBCollider b)
         {
             return CollidesWith(a, b, null);
         }
-        public static bool CollidesWith(this FBCollider a, FBCollider b, Action<Collision> onCollision)
+        public static bool CollidesWith(this FBCollider a, FBCollider b, Action<FBCollision> onCollision)
         {
             var axes = a.CollisionAxes(b);
             axes.AddRange(b.CollisionAxes(a));
@@ -52,7 +52,7 @@ namespace FlipbookPhysics
                 }
             }
 
-            var collision = new Collision()
+            var collision = new FBCollision()
             {
                 seperatingVector = mtv * mtvDistance,
                 collidedWith = b
@@ -63,7 +63,7 @@ namespace FlipbookPhysics
             return true;
         }
 
-        public static bool WillCollideWith(this FBCollider a, Vector2 aMovement, FBCollider b, Vector2 bMovement, out MovementInfo aMovementInfo, out MovementInfo bMovementInfo, bool ccd)
+        public static bool WillCollideWith(this FBCollider a, Vector2 aMovement, FBCollider b, Vector2 bMovement, out FBCollisionMovementInformation aMovementInfo, out FBCollisionMovementInformation bMovementInfo, bool ccd)
         {
             var axes = a.CollisionAxes(b);
             axes.AddRange(b.CollisionAxes(a));
@@ -71,7 +71,7 @@ namespace FlipbookPhysics
             aMovementInfo = null;
             bMovementInfo = null;
 
-            AxisInfo aInfo = new AxisInfo();
+            FBAxisInfo aInfo = new FBAxisInfo();
             aInfo.MTVAmount = float.MaxValue;
             aInfo.collisionRange.X = float.MinValue;
             aInfo.collisionRange.Y = float.MaxValue;
@@ -115,7 +115,7 @@ namespace FlipbookPhysics
 
                     var rangeMin = begin > aInfo.collisionRange.X ? begin : aInfo.collisionRange.X;
                     var rangeMax = end < aInfo.collisionRange.Y ? end : aInfo.collisionRange.Y;
-                    
+
                     if (rangeMin > rangeMax)
                     {
                         willCollide = false;
@@ -153,19 +153,19 @@ namespace FlipbookPhysics
                 var aSeparation = aInfo.MTVAxis * ((aInfo.MTVAmount * (float)aMovePercent) + 1);
                 var bSeparation = aInfo.MTVAxis * ((-aInfo.MTVAmount * (float)bMovePercent) - 1);
 
-                aMovementInfo = new MovementInfo()
+                aMovementInfo = new FBCollisionMovementInformation()
                 {
                     ValidMovement = aSeparation,
                     InteriorCollision = true
                 };
-                bMovementInfo = new MovementInfo()
+                bMovementInfo = new FBCollisionMovementInformation()
                 {
                     ValidMovement = bSeparation,
-                    InteriorCollision = true                   
+                    InteriorCollision = true
                 };
                 return true;
             }
-            else if(willCollide) //Will collide
+            else if (willCollide) //Will collide
             {
                 //The last axis that was collided with causing the collision to actually occur.
                 var collisionAxis = aInfo.AxisDirection;
@@ -189,7 +189,7 @@ namespace FlipbookPhysics
                 var aVel = Vector2.Dot(aMovement, collisionAxis);
                 var bCenter = Vector2.Dot(b.Position, collisionAxis);
                 var bVel = Vector2.Dot(bMovement, collisionAxis);
-                
+
                 if (aVel > 0 && bVel > 0)
                 {
                     if (aCenter > bCenter)
@@ -219,7 +219,7 @@ namespace FlipbookPhysics
                 var aReflectedMovement = Vector2.Reflect(aMovementTilCollision, aInfo.AxisDirection);
                 var bReflectedMovement = Vector2.Reflect(bMovementTilCollision, aInfo.AxisDirection);
 
-                aMovementInfo = new MovementInfo()
+                aMovementInfo = new FBCollisionMovementInformation()
                 {
                     ValidMovement = aMovementTilCollision,
                     ValidMovementPercent = aInfo.lessCollisionRange.X,
@@ -227,14 +227,14 @@ namespace FlipbookPhysics
                     RemainderAxisMovement = aMovementRemainder,
                     ReflectedMovement = aReflectedMovement
                 };
-                bMovementInfo = new MovementInfo()
+                bMovementInfo = new FBCollisionMovementInformation()
                 {
                     ValidMovement = bMovementTilCollision,
                     ValidMovementPercent = aInfo.lessCollisionRange.X,
                     RemainderAxis = remainderAxis,
                     RemainderAxisMovement = bMovementRemainder,
                     ReflectedMovement = bReflectedMovement
-               };
+                };
                 return true;
             }
             else
@@ -258,7 +258,7 @@ namespace FlipbookPhysics
                 beginC = CalcCollisionTime(aMax, aMovement, bMin, bMovement);
                 endC = CalcCollisionTime(aMin, aMovement, bMax, bMovement);
             }
-            else 
+            else
             {
                 beginC = CalcCollisionTime(aMin, aMovement, bMax, bMovement);
                 endC = CalcCollisionTime(aMax, aMovement, bMin, bMovement);
@@ -278,7 +278,7 @@ namespace FlipbookPhysics
             {
                 lessBegin = beginC;
             }
-            
+
             begin = beginC;
             end = endC;
 
@@ -291,12 +291,12 @@ namespace FlipbookPhysics
             ///T = Time
             ///D = Distance
             ///R = Rate
-            
+
             float R = 0;
             float D = Math.Abs(a - b);
 
             //Points moving in the same direction.
-            if(aMovement >= 0 && bMovement >= 0 || aMovement < 0 && bMovement < 0)
+            if (aMovement >= 0 && bMovement >= 0 || aMovement < 0 && bMovement < 0)
             {
                 R = Math.Abs(aMovement - bMovement);
             }

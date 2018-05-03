@@ -11,11 +11,11 @@ namespace FlipbookPhysics
     {
         public FBBody BodyA;
         public FBBody BodyB;
-        public MovementInfo AMovement;
-        public MovementInfo BMovement;
+        public FBCollisionMovementInformation AMovement;
+        public FBCollisionMovementInformation BMovement;
     }
 
-    public class MovementInfo
+    public class FBCollisionMovementInformation
     {
         public bool InteriorCollision;
         public Vector2 ValidMovement;

@@ -7,5 +7,5 @@ using System.Threading.Tasks;
 
 namespace FlipbookPhysics
 {
-    public delegate Action<Collision> CollisionAction();
+    public delegate Action<CollisionInfo> CollisionAction();
 }
