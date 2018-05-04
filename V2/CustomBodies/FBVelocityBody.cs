@@ -9,6 +9,11 @@ namespace FlipbookPhysics.V2.CustomBodies
 {
     public class FBVelocityBody : FBBody
     {
+        public Vector2 Velocity;
 
+        public override void SetMovementThisFrame(double elapsedMilliseconds)
+        {
+            MovementThisFrame = Velocity * (float)(elapsedMilliseconds / 1000);
+        }
     }
 }

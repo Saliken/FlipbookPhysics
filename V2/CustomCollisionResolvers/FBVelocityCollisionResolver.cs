@@ -11,7 +11,12 @@ namespace FlipbookPhysics.V2.CustomCollisionResolvers
     {
         public void Resolve(FBCollision<FBVelocityBody> collision)
         {
-            throw new NotImplementedException();
+            var aVelocityModifier = collision.BodyA.Velocity - collision.BodyB.Velocity;
+            var bVelocityModifier = collision.BodyB.Velocity - collision.BodyA.Velocity;
+            collision.BodyA.Position += collision.AMovement.ValidMovement;
+            collision.BodyA.MovementThisFrame = collision.AMovement.RemainderAxisMovement;
+            collision.BodyB.Position += collision.BMovement.ValidMovement;
+            collision.BodyB.MovementThisFrame = collision.BMovement.RemainderAxisMovement;
         }
     }
 }

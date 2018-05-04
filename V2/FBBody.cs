@@ -7,24 +7,24 @@ using Microsoft.Xna.Framework;
 
 namespace FlipbookPhysics.V2
 {
-    public class FBBody : IFBBody
+    public class FBBody : IFBSpatial
     {
         protected Vector2 position;
         protected float rotation;
-        protected Vector2 movement;
         protected FBCollider collider;
+
+        protected Vector2 movementThisFrame;
 
         public Vector2 Position { get => position; set => position = value; }
         public float Rotation { get => rotation; set => rotation = value; }
-        public Vector2 Movement { get => movement; set => movement = value; }
+        public Vector2 MovementThisFrame { get => movementThisFrame; set => movementThisFrame = value; }
         public FBCollider Collider { get => collider; set { collider = value; collider.Parent = this; } }
 
         public Rectangle AABB => Collider.AABB();
 
-        public void AddMovement(float xPixels, float yPixels)
+        public virtual void SetMovementThisFrame(double elapsedMilliseconds)
         {
-            movement.X += xPixels;
-            movement.Y += yPixels;
+            return;
         }
     }
 }

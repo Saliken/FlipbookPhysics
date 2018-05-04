@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FlipbookPhysics.V2
 {
-    public interface IFBCollisionResolver<T> where T : IFBBody
+    public interface IFBCollisionResolver<T> where T : FBBody
     {
         void Resolve(FBCollision<T> collision);
     }

@@ -55,6 +55,17 @@ namespace FlipbookPhysics.V2
                 foreach (var collision in collisions)
                     CollisionResolver.Resolve(collision);
             }
+
+            MoveBodies(gameTime);
+        }
+
+        protected void MoveBodies(GameTime gameTime)
+        {
+            foreach(var body in bodies)
+            {
+                body.Position += body.MovementThisFrame;
+                body.MovementThisFrame = Vector2.Zero;
+            }
         }
 
         public void Draw()

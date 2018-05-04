@@ -12,9 +12,9 @@ namespace FlipbookPhysics.V2.CustomCollisionResolvers
         public void Resolve(FBCollision<FBBasicBody> collision)
         {
             collision.BodyA.Position += collision.AMovement.ValidMovement;
-            collision.BodyA.Movement = collision.AMovement.RemainderAxisMovement;
+            collision.BodyA.MovementThisFrame = collision.AMovement.RemainderAxisMovement;
             collision.BodyB.Position += collision.BMovement.ValidMovement;
-            collision.BodyB.Movement = collision.BMovement.RemainderAxisMovement;
+            collision.BodyB.MovementThisFrame = collision.BMovement.RemainderAxisMovement;
         }
     }
 }

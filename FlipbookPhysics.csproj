@@ -79,7 +79,6 @@
     <Compile Include="V2\FBPotentialCollisionPair.cs" />
     <Compile Include="V2\FBScene.cs" />
     <Compile Include="V2\FBSpatialHash.cs" />
-    <Compile Include="V2\IFBBody.cs" />
     <Compile Include="V2\IFBCollisionResolver.cs" />
     <Compile Include="V2\IFBSpatial.cs" />
     <Compile Include="Verlet\IVerletCollidable.cs" />

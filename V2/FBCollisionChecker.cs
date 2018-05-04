@@ -51,7 +51,7 @@ namespace FlipbookPhysics.V2
             var allPotentialCollisionPairs = GetPotentialCollisionPairs(bodies, bodiesHashed);
             foreach (var pair in allPotentialCollisionPairs)
             {
-                if (pair.BodyA.Collider.WillCollideWith(pair.BodyA.Movement, pair.BodyB.Collider, pair.BodyB.Movement, out var bodyAMovementInfo, out var bodyBMovementInfo, true))
+                if (pair.BodyA.Collider.WillCollideWith(pair.BodyA.MovementThisFrame, pair.BodyB.Collider, pair.BodyB.MovementThisFrame, out var bodyAMovementInfo, out var bodyBMovementInfo, true))
                 {
                     var collision = new FBCollision<T>();
                     collision.BodyA = pair.BodyA;
@@ -101,22 +101,22 @@ namespace FlipbookPhysics.V2
             return potentialBodies;
         }
 
-        protected Rectangle GetSweptAABB(IFBBody body)
+        protected Rectangle GetSweptAABB(FBBody body)
         {
             var x = body.AABB.Left;
             var y = body.AABB.Top;
             var x2 = body.AABB.Right;
             var y2 = body.AABB.Bottom;
 
-            if (body.Movement.X >= 0)
-                x2 += (int)body.Movement.X;
+            if (body.MovementThisFrame.X >= 0)
+                x2 += (int)body.MovementThisFrame.X;
             else
-                x -= (int)body.Movement.X;
+                x -= (int)body.MovementThisFrame.X;
 
-            if (body.Movement.Y >= 0)
-                y2 += (int)body.Movement.Y;
+            if (body.MovementThisFrame.Y >= 0)
+                y2 += (int)body.MovementThisFrame.Y;
             else
-                y -= (int)body.Movement.Y;
+                y -= (int)body.MovementThisFrame.Y;
 
             var sweptAABB = new Rectangle(x, y, x2 - x, y2 - y);
             return sweptAABB;
