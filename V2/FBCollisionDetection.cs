@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FlipbookPhysics.V2
 {
-    public class FBCollision
+    public class FBCollisionTemp
     {
         public Vector2 seperatingVector;
         public FBCollider collidedWith;
@@ -28,7 +28,7 @@ namespace FlipbookPhysics.V2
         {
             return CollidesWith(a, b, null);
         }
-        public static bool CollidesWith(this FBCollider a, FBCollider b, Action<FBCollision> onCollision)
+        public static bool CollidesWith(this FBCollider a, FBCollider b, Action<FBCollisionTemp> onCollision)
         {
             var axes = a.CollisionAxes(b);
             axes.AddRange(b.CollisionAxes(a));
@@ -52,7 +52,7 @@ namespace FlipbookPhysics.V2
                 }
             }
 
-            var collision = new FBCollision()
+            var collision = new FBCollisionTemp()
             {
                 seperatingVector = mtv * mtvDistance,
                 collidedWith = b

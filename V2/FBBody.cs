@@ -9,22 +9,20 @@ namespace FlipbookPhysics.V2
 {
     public class FBBody : IFBSpatial
     {
-        protected Vector2 position;
-        protected float rotation;
-        protected FBCollider collider;
+        public Vector2 Position;
+        public float Rotation;
+        public Vector2 Velocity;
 
+        protected FBCollider collider;
         protected Vector2 movementThisFrame;
 
-        public Vector2 Position { get => position; set => position = value; }
-        public float Rotation { get => rotation; set => rotation = value; }
         public Vector2 MovementThisFrame { get => movementThisFrame; set => movementThisFrame = value; }
         public FBCollider Collider { get => collider; set { collider = value; collider.Parent = this; } }
-
         public Rectangle AABB => Collider.AABB();
 
-        public virtual void SetMovementThisFrame(double elapsedMilliseconds)
+        public void SetMovementThisFrame(GameTime gameTime)
         {
-            return;
+            movementThisFrame = Velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
     }
 }

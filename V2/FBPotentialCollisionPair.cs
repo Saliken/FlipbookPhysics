@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace FlipbookPhysics.V2
 {
-    public class FBPotentialCollisionPair<T>
+    public class FBPotentialCollisionPair
     {
-        public T BodyA;
-        public T BodyB;
+        public FBBody BodyA;
+        public FBBody BodyB;
     }
 }

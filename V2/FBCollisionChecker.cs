@@ -7,28 +7,28 @@ using System.Threading.Tasks;
 
 namespace FlipbookPhysics.V2
 {
-    public class FBCollisionChecker<T> where T : FBBody
+    public class FBCollisionChecker
     {
 
         public int Iterations { get; set; }
 
-        public FBCollision<T> GetCollision(T BodyA, T BodyB)
+        public FBCollision GetCollision(FBBody BodyA, FBBody BodyB)
         {
             throw new NotImplementedException();
         }
 
-        public List<FBCollision<T>> GetAllCollisions(List<T> bodies, FBSpatialHash<T> bodiesHashed)
+        public List<FBCollision> GetAllCollisions(List<FBBody> bodies, FBSpatialHash<FBBody> bodiesHashed)
         {
             var allPossibleCollisions = GetAllPossibleCollisions(bodies, bodiesHashed);
             var firstCollisions = FilterEarliestCollisions(allPossibleCollisions);
             return firstCollisions;
         }
 
-        protected List<FBCollision<T>> FilterEarliestCollisions(List<FBCollision<T>> collisions)
+        protected List<FBCollision> FilterEarliestCollisions(List<FBCollision> collisions)
         {
             var ordered = collisions.OrderBy(x => x.AMovement.ValidMovementPercent);
 
-            List<FBCollision<T>> earliestCollisions = new List<FBCollision<T>>();
+            List<FBCollision> earliestCollisions = new List<FBCollision>();
             List<FBBody> completedBodies = new List<FBBody>();
 
             foreach(var collision in ordered)
@@ -44,16 +44,16 @@ namespace FlipbookPhysics.V2
             return earliestCollisions;
         }
 
-        protected List<FBCollision<T>> GetAllPossibleCollisions(List<T> bodies, FBSpatialHash<T> bodiesHashed)
+        protected List<FBCollision> GetAllPossibleCollisions(List<FBBody> bodies, FBSpatialHash<FBBody> bodiesHashed)
         {
-            List<FBCollision<T>> collisions = new List<FBCollision<T>>();
+            List<FBCollision> collisions = new List<FBCollision>();
 
             var allPotentialCollisionPairs = GetPotentialCollisionPairs(bodies, bodiesHashed);
             foreach (var pair in allPotentialCollisionPairs)
             {
                 if (pair.BodyA.Collider.WillCollideWith(pair.BodyA.MovementThisFrame, pair.BodyB.Collider, pair.BodyB.MovementThisFrame, out var bodyAMovementInfo, out var bodyBMovementInfo, true))
                 {
-                    var collision = new FBCollision<T>();
+                    var collision = new FBCollision();
                     collision.BodyA = pair.BodyA;
                     collision.BodyB = pair.BodyB;
                     collision.AMovement = bodyAMovementInfo;
@@ -66,16 +66,16 @@ namespace FlipbookPhysics.V2
             return collisions;
         }
 
-        protected List<FBPotentialCollisionPair<T>> GetPotentialCollisionPairs(List<T> bodies, FBSpatialHash<T> bodiesHashed)
+        protected List<FBPotentialCollisionPair> GetPotentialCollisionPairs(List<FBBody> bodies, FBSpatialHash<FBBody> bodiesHashed)
         {
-            var pairs = new List<FBPotentialCollisionPair<T>>();
+            var pairs = new List<FBPotentialCollisionPair>();
 
             foreach(var body in bodies)
             {
                 var potentialCollidingBodies = GetPotentialCollidingBodies(body, bodiesHashed);
                 foreach(var potentialCollidingBody in potentialCollidingBodies)
                 {
-                    pairs.Add(new FBPotentialCollisionPair<T>()
+                    pairs.Add(new FBPotentialCollisionPair()
                     {
                         BodyA = body,
                         BodyB = potentialCollidingBody
@@ -86,9 +86,9 @@ namespace FlipbookPhysics.V2
             return pairs;
         }
 
-        protected List<T> GetPotentialCollidingBodies(T body, FBSpatialHash<T> bodiesHashed)
+        protected List<FBBody> GetPotentialCollidingBodies(FBBody body, FBSpatialHash<FBBody> bodiesHashed)
         {
-            List<T> potentialBodies = new List<T>();
+            List<FBBody> potentialBodies = new List<FBBody>();
 
             var sweptAABB = GetSweptAABB(body);
             var potentialCollisionBodies = bodiesHashed.GetRectangle(sweptAABB);

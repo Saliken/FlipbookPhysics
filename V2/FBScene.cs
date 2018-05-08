@@ -7,35 +7,38 @@ using System.Threading.Tasks;
 
 namespace FlipbookPhysics.V2
 {
-    public class FBScene<T> where T : FBBody
+    public class FBScene
     {
         public Vector2 Gravity;
         public bool UseGravity = false;
         public bool Active = true;
         public float Speed = 1;
-        public IFBCollisionResolver<T> CollisionResolver;
-        public int Iterations = 2;
         public bool Debug;
+        public float AirFriction = 5f; //reduction per second 0-100
 
-        protected List<T> bodies;
-        protected FBSpatialHash<T> bodiesHash;
-        protected FBCollisionChecker<T> collisionChecker;
+
+        public int Iterations = 1;
+        public FBCollisionResolver CollisionResolver;
+
+        protected List<FBBody> bodies;
+        protected FBSpatialHash<FBBody> bodiesHash;
+        protected FBCollisionChecker collisionChecker;
 
 
         public FBScene()
         {
-            bodies = new List<T>();
-            bodiesHash = new FBSpatialHash<T>(100);
-            collisionChecker = new FBCollisionChecker<T>();
+            bodies = new List<FBBody>();
+            bodiesHash = new FBSpatialHash<FBBody>(100);
+            collisionChecker = new FBCollisionChecker();
         }
 
         public void Initialize()
         {
-            bodies = new List<T>();
-            bodiesHash = new FBSpatialHash<T>(100);
+            bodies = new List<FBBody>();
+            bodiesHash = new FBSpatialHash<FBBody>(100);
         }
 
-        public void Add(T body)
+        public void Add(FBBody body)
         {
             bodies.Add(body);
         }
@@ -48,6 +51,8 @@ namespace FlipbookPhysics.V2
             if (!Active)
                 return;
 
+            PreProcessBodies(gameTime);
+
             for (int i = 0; i < Iterations; i++)
             {
                 FillSpatialHash();
@@ -57,6 +62,29 @@ namespace FlipbookPhysics.V2
             }
 
             MoveBodies(gameTime);
+        }
+
+        protected void PreProcessBodies(GameTime gameTime)
+        {
+            foreach(var body in bodies)
+            {
+                ApplyGravity(body, gameTime);
+                ApplyAirFriction(body, gameTime);
+
+                body.SetMovementThisFrame(gameTime);
+            }
+        }
+
+        protected void ApplyAirFriction(FBBody body, GameTime gameTime)
+        {
+            body.Velocity *= 1 - (AirFriction / 100f);
+            //var velocityReductionPerSecond = body.Velocity * ((AirFriction / 100f) * (float)gameTime.ElapsedGameTime.TotalSeconds);
+            //body.Velocity -= velocityReductionPerSecond;
+        }
+
+        protected void ApplyGravity(FBBody body, GameTime gameTime)
+        {
+            
         }
 
         protected void MoveBodies(GameTime gameTime)

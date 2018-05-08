@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace FlipbookPhysics.V2
 {
-    public class FBCollision<T> where T : FBBody
+    public class FBCollision
     {
-        public T BodyA;
-        public T BodyB;
+        public FBBody BodyA;
+        public FBBody BodyB;
         public FBCollisionMovementInformation AMovement;
         public FBCollisionMovementInformation BMovement;
     }

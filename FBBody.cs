@@ -32,7 +32,6 @@ namespace FlipbookPhysics
         public FBBody(FBBodyType type = FBBodyType.Dynamic)
         {
             this.type = type;
-            FBEngine.bodies.Add(this);
         }
         
         public void Move(float x, float y)

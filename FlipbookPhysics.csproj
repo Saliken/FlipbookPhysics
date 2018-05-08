@@ -59,27 +59,22 @@
     <Compile Include="FBBodyType.cs" />
     <Compile Include="FBBresenhamHelper.cs" />
     <Compile Include="FBDebugDraw.cs" />
-    <Compile Include="FBEngine.cs" />
     <Compile Include="FBQuadTree.cs" />
     <Compile Include="FBQuadTreeNode.cs" />
     <Compile Include="FBSpatialHash.cs" />
     <Compile Include="CollisionResponseCreators\FBVelocityCollisionResponseCreator.cs" />
     <Compile Include="CollisionResponseCreators\ICollisionResponseCreator.cs" />
     <Compile Include="List2D.cs" />
-    <Compile Include="V2\CustomBodies\FBBasicBody.cs" />
-    <Compile Include="V2\CustomBodies\FBVelocityBody.cs" />
-    <Compile Include="V2\CustomCollisionResolvers\FBBasicCollisionResolver.cs" />
-    <Compile Include="V2\CustomCollisionResolvers\FBVelocityCollisionResolver.cs" />
     <Compile Include="V2\FBBody.cs" />
     <Compile Include="V2\FBColliderFactory.cs" />
     <Compile Include="V2\FBCollision.cs" />
     <Compile Include="V2\FBCollisionChecker.cs" />
     <Compile Include="V2\FBCollisionDetection.cs" />
     <Compile Include="V2\FBCollisionMovementInformation.cs" />
+    <Compile Include="V2\FBCollisionResolver.cs" />
     <Compile Include="V2\FBPotentialCollisionPair.cs" />
     <Compile Include="V2\FBScene.cs" />
     <Compile Include="V2\FBSpatialHash.cs" />
-    <Compile Include="V2\IFBCollisionResolver.cs" />
     <Compile Include="V2\IFBSpatial.cs" />
     <Compile Include="Verlet\IVerletCollidable.cs" />
     <Compile Include="Colliders\FBCircle.cs" />
@@ -97,6 +92,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="V2\CustomBodies\" />
+    <Folder Include="V2\CustomCollisionResolvers\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
