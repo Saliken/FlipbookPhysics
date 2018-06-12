@@ -21,8 +21,8 @@ namespace FlipbookPhysics
         {
             var x = Position.X - Radius;
             var y = Position.Y - Radius;
-            var width = Position.X + Radius + x;
-            var height = Position.Y + Radius - y;
+            var width = Position.X + Radius;
+            var height = Position.Y + Radius;
             return new Rectangle((int)x, (int)y, (int)width, (int)height);
         }
 

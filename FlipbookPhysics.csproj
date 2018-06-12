@@ -65,11 +65,14 @@
     <Compile Include="CollisionResponseCreators\FBVelocityCollisionResponseCreator.cs" />
     <Compile Include="CollisionResponseCreators\ICollisionResponseCreator.cs" />
     <Compile Include="List2D.cs" />
+    <Compile Include="V2\FBAxisProjection.cs" />
     <Compile Include="V2\FBBody.cs" />
     <Compile Include="V2\FBColliderFactory.cs" />
     <Compile Include="V2\FBCollision.cs" />
     <Compile Include="V2\FBCollisionChecker.cs" />
     <Compile Include="V2\FBCollisionDetection.cs" />
+    <Compile Include="V2\FBCollisionDetector.cs" />
+    <Compile Include="V2\FBCollisionInformation.cs" />
     <Compile Include="V2\FBCollisionMovementInformation.cs" />
     <Compile Include="V2\FBCollisionResolver.cs" />
     <Compile Include="V2\FBPotentialCollisionPair.cs" />

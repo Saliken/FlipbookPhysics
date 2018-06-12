@@ -26,7 +26,7 @@ namespace FlipbookPhysics.V2
 
         protected List<FBCollision> FilterEarliestCollisions(List<FBCollision> collisions)
         {
-            var ordered = collisions.OrderBy(x => x.AMovement.ValidMovementPercent);
+            var ordered = collisions.OrderBy(x => x.TimeOfImpact);
 
             List<FBCollision> earliestCollisions = new List<FBCollision>();
             List<FBBody> completedBodies = new List<FBBody>();
@@ -51,16 +51,20 @@ namespace FlipbookPhysics.V2
             var allPotentialCollisionPairs = GetPotentialCollisionPairs(bodies, bodiesHashed);
             foreach (var pair in allPotentialCollisionPairs)
             {
-                if (pair.BodyA.Collider.WillCollideWith(pair.BodyA.MovementThisFrame, pair.BodyB.Collider, pair.BodyB.MovementThisFrame, out var bodyAMovementInfo, out var bodyBMovementInfo, true))
+                if(FBCollisionDetector.GetCollisionInformation(pair.BodyA, pair.BodyB, out var collisionInformation))
                 {
-                    var collision = new FBCollision();
-                    collision.BodyA = pair.BodyA;
-                    collision.BodyB = pair.BodyB;
-                    collision.AMovement = bodyAMovementInfo;
-                    collision.BMovement = bodyBMovementInfo;
-
-                    collisions.Add(collision);
+                    collisions.Add(collisionInformation);
                 }
+                //if (pair.BodyA.Collider.WillCollideWith(pair.BodyA.MovementThisFrame, pair.BodyB.Collider, pair.BodyB.MovementThisFrame, out var bodyAMovementInfo, out var bodyBMovementInfo, true))
+                //{
+                //    var collision = new FBCollision();
+                //    collision.BodyA = pair.BodyA;
+                //    collision.BodyB = pair.BodyB;
+                //    collision.AMovement = bodyAMovementInfo;
+                //    collision.BMovement = bodyBMovementInfo;
+
+                //    collisions.Add(collision);
+                //}
             }
 
             return collisions;

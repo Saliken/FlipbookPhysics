@@ -86,7 +86,10 @@ namespace FlipbookPhysics.V2
                 {
                     var bodies = hash.GetAt(x, y);
                     if(bodies != null)
-                        list.AddRange(hash.GetAt(x, y));
+                    {
+                        var distinctBodies = bodies.Where(b => !list.Contains(b));
+                        list.AddRange(distinctBodies);
+                    }
                 }
             }
 

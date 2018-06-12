@@ -14,10 +14,10 @@ namespace FlipbookPhysics.V2
         public bool Active = true;
         public float Speed = 1;
         public bool Debug;
-        public float AirFriction = 5f; //reduction per second 0-100
+        public float AirFriction = 10f; //reduction per second 0-100
 
 
-        public int Iterations = 1;
+        public int Iterations = 3;
         public FBCollisionResolver CollisionResolver;
 
         protected List<FBBody> bodies;
@@ -78,8 +78,6 @@ namespace FlipbookPhysics.V2
         protected void ApplyAirFriction(FBBody body, GameTime gameTime)
         {
             body.Velocity *= 1 - (AirFriction / 100f);
-            //var velocityReductionPerSecond = body.Velocity * ((AirFriction / 100f) * (float)gameTime.ElapsedGameTime.TotalSeconds);
-            //body.Velocity -= velocityReductionPerSecond;
         }
 
         protected void ApplyGravity(FBBody body, GameTime gameTime)
