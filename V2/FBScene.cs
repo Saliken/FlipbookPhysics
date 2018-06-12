@@ -17,7 +17,7 @@ namespace FlipbookPhysics.V2
         public float AirFriction = 10f; //reduction per second 0-100
 
 
-        public int Iterations = 3;
+        public int Iterations = 1;
         public FBCollisionResolver CollisionResolver;
 
         protected List<FBBody> bodies;
