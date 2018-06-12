@@ -117,14 +117,14 @@ namespace FlipbookPhysics.V2
         private static FBFutureCollisionInfo GetFutureCollisionInformation(FBBody a, FBBody b, FBFutureAxisInfo axisInfo)
         {
             var collisionAxis = axisInfo.axisDirection;
-            var remainderAxis = new Vector2(-collisionAxis.Y, collisionAxis.X);
+            var tangentAxis = new Vector2(-collisionAxis.Y, collisionAxis.X);
 
             var aMovementTilCollision = a.MovementThisFrame * axisInfo.lessCollisionRange.X;
             var bMovementTilCollision = b.MovementThisFrame * axisInfo.lessCollisionRange.X;
             var aInitialMovementRemainder = a.MovementThisFrame - aMovementTilCollision;
             var bInitialMovementRemainder = b.MovementThisFrame - bMovementTilCollision;
-            var aMovementRemainder = Vector2.Dot(aInitialMovementRemainder, remainderAxis) * remainderAxis;
-            var bMovementRemainder = Vector2.Dot(bInitialMovementRemainder, remainderAxis) * remainderAxis;
+            var aMovementRemainder = Vector2.Dot(aInitialMovementRemainder, tangentAxis) * tangentAxis;
+            var bMovementRemainder = Vector2.Dot(bInitialMovementRemainder, tangentAxis) * tangentAxis;
 
             var aCenter = Vector2.Dot(a.Position, collisionAxis);
             var aVelocity = Vector2.Dot(a.MovementThisFrame, collisionAxis);
@@ -156,25 +156,27 @@ namespace FlipbookPhysics.V2
             {
                 ACollisionInfo = new FBCollisionInformation()
                 {
-                    
+                    CollisionNormal = collisionAxis,
+                    CollisionTangent = tangentAxis
                 },
                 AMovement = new FBCollisionMovementInformation()
                 {
                     ValidMovement = aMovementTilCollision,
                     ValidMovementPercent = axisInfo.lessCollisionRange.X,
-                    RemainderAxis = remainderAxis,
+                    RemainderAxis = tangentAxis,
                     RemainderAxisMovement = aMovementRemainder,
                     ReflectedMovement = aReflectedMovement
                 },
                 BCollisionInfo = new FBCollisionInformation()
                 {
-
+                    CollisionNormal = new Vector2(-collisionAxis.X, -collisionAxis.Y),
+                    CollisionTangent = new Vector2(-tangentAxis.X, -tangentAxis.Y)
                 },
                 BMovement = new FBCollisionMovementInformation()
                 {
                     ValidMovement = bMovementTilCollision,
                     ValidMovementPercent = axisInfo.lessCollisionRange.X,
-                    RemainderAxis = remainderAxis,
+                    RemainderAxis = tangentAxis,
                     RemainderAxisMovement = bMovementRemainder,
                     ReflectedMovement = bReflectedMovement
                 }
