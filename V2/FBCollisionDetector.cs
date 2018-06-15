@@ -202,8 +202,8 @@ namespace FlipbookPhysics.V2
                 bMovePercent = 0.5f;
             }
 
-            var aSeparation = axisInfo.MTVAxis * ((axisInfo.MTVAmount * (float)aMovePercent) + 1);
-            var bSeparation = axisInfo.MTVAxis * ((-axisInfo.MTVAmount * (float)bMovePercent) - 1);
+            var aSeparation = axisInfo.MTVAxis * ((axisInfo.MTVAmount) + 1);
+            var bSeparation = axisInfo.MTVAxis * ((-axisInfo.MTVAmount) - 1);
 
             return new FBCurrentCollisionInfo
             {

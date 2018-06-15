@@ -16,8 +16,8 @@ namespace FlipbookPhysics.V2
             
             if(collision.CurrentCollision != null)
             {
-                collision.BodyA.Position += collision.CurrentCollision.MTV / 2;
-                collision.BodyB.Position -= collision.CurrentCollision.MTV / 2;
+                collision.BodyA.Position -= collision.CurrentCollision.MTV / 2;
+                collision.BodyB.Position += collision.CurrentCollision.MTV / 2;
             }
             else if(collision.FutureCollision != null)
             {
@@ -39,13 +39,18 @@ namespace FlipbookPhysics.V2
                 var aFinal = aVA + aTA;
                 var bFinal = bVA + bTA;
 
-                collision.BodyA.Position += collision.FutureCollision.AMovement.ValidMovement;
-                collision.BodyB.Position += collision.FutureCollision.BMovement.ValidMovement;
+                var aMove = collision.FutureCollision.AMovement.ValidMovement * 0.5f; ;
+                var bMove = collision.FutureCollision.BMovement.ValidMovement * 0.5f; ;
+
+                collision.BodyA.Position += aMove;
+                collision.BodyB.Position += bMove;
                 collision.BodyA.Velocity = aFinal;
                 collision.BodyB.Velocity = -bFinal;
+                collision.BodyA.MovementThisFrame = Vector2.Zero;
+                collision.BodyB.MovementThisFrame = Vector2.Zero;
 
                 if(aFinal.Length() > 15)
-                {
+                { 
                     return;
                 }
             }
