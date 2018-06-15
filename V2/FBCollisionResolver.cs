@@ -28,8 +28,8 @@ namespace FlipbookPhysics.V2
                 var BodyBNormalVelocity = Vector2.Dot(bVelocity, collision.FutureCollision.BCollisionInfo.CollisionNormal);
                 var BodyBTangentVelocity = Vector2.Dot(bVelocity, collision.FutureCollision.BCollisionInfo.CollisionTangent);
 
-                var aVelAfter = (BodyANormalVelocity * 0 + 2 * BodyBNormalVelocity) / 2;
-                var bVelAfter = (BodyBNormalVelocity * 0 + 2 * BodyANormalVelocity) / 2;
+                var aVelAfter = (BodyANormalVelocity * (collision.BodyA.mass - collision.BodyB.mass) + 2 * collision.BodyB.mass * BodyBNormalVelocity) / (collision.BodyA.mass + collision.BodyB.mass);
+                var bVelAfter = (BodyBNormalVelocity * (collision.BodyB.mass - collision.BodyA.mass) + 2 * collision.BodyA.mass * BodyANormalVelocity) / (collision.BodyA.mass + collision.BodyB.mass);
 
                 var aVA = aVelAfter * collision.FutureCollision.ACollisionInfo.CollisionNormal;
                 var aTA = BodyATangentVelocity * collision.FutureCollision.ACollisionInfo.CollisionTangent;

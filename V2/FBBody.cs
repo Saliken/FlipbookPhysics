@@ -12,6 +12,7 @@ namespace FlipbookPhysics.V2
         public Vector2 Position;
         public float Rotation;
         public Vector2 Velocity;
+        public float mass = 1;
 
         protected FBCollider collider;
         protected Vector2 movementThisFrame;

@@ -23,7 +23,7 @@ namespace FlipbookPhysics.V2
         {
             FBRectangle collider;
             if (centered)
-                collider = new FBRectangle(-width / 2, -height / 2, width / 2, height / 2);
+                collider = new FBRectangle(-width / 2, -height / 2, width, height);
             else
                 collider = new FBRectangle(0, 0, width, height);
             return collider;
