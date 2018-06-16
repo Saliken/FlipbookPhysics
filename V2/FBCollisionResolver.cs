@@ -16,8 +16,8 @@ namespace FlipbookPhysics.V2
             
             if(collision.CurrentCollision != null)
             {
-                collision.BodyA.Position -= collision.CurrentCollision.MTV / 2;
-                collision.BodyB.Position += collision.CurrentCollision.MTV / 2;
+                collision.BodyA.Position += collision.CurrentCollision.MTV / 2;
+                collision.BodyB.Position -= collision.CurrentCollision.MTV / 2;
             }
             else if(collision.FutureCollision != null)
             {

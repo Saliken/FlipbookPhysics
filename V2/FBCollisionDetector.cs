@@ -70,12 +70,13 @@ namespace FlipbookPhysics.V2
 
         private static bool CheckCurrentlyColliding(FBAxisProjection projection, Vector2 axis, FBCurrentAxisInfo axisInfo)
         {
-            var intervalDistance = projection.IntervalDistance();
+            float seperation = 0;
+            var intervalDistance = projection.IntervalDistance(out seperation);
             if(intervalDistance < 0) //Current colliding
             {
-                if(!axisInfo.Used || (intervalDistance = Math.Abs(intervalDistance)) < axisInfo.MTVAmount)
+                if(!axisInfo.Used || Math.Abs(intervalDistance) < Math.Abs(axisInfo.MTVAmount))
                 {
-                    axisInfo.MTVAmount = intervalDistance;
+                    axisInfo.MTVAmount = seperation;
                     axisInfo.MTVAxis = axis;
                     axisInfo.Used = true;
                 }
@@ -165,7 +166,7 @@ namespace FlipbookPhysics.V2
                     ValidMovementPercent = axisInfo.lessCollisionRange.X,
                     RemainderAxis = tangentAxis,
                     RemainderAxisMovement = aMovementRemainder,
-                    ReflectedMovement = aReflectedMovement
+                    ReflectedMovement = aReflectedMovement 
                 },
                 BCollisionInfo = new FBCollisionInformation()
                 {
@@ -202,8 +203,8 @@ namespace FlipbookPhysics.V2
                 bMovePercent = 0.5f;
             }
 
-            var aSeparation = axisInfo.MTVAxis * ((axisInfo.MTVAmount) + 1);
-            var bSeparation = axisInfo.MTVAxis * ((-axisInfo.MTVAmount) - 1);
+            var aSeparation = axisInfo.MTVAxis * ((axisInfo.MTVAmount));
+            var bSeparation = axisInfo.MTVAxis * ((-axisInfo.MTVAmount));
 
             return new FBCurrentCollisionInfo
             {
@@ -221,7 +222,7 @@ namespace FlipbookPhysics.V2
 
             var aCenter = aMax - (aMax - aMin) / 2;
             var bCenter = bMax - (bMax - bMin) / 2;
-            if (aMovement >= bMovement)
+            if (Math.Abs(aMovement) >= Math.Abs(bMovement))
             {
                 beginC = CalcCollisionTime(aMax, aMovement, bMin, bMovement);
                 endC = CalcCollisionTime(aMin, aMovement, bMax, bMovement);

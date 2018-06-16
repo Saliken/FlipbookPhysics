@@ -82,7 +82,7 @@ namespace FlipbookPhysics.V2
 
         protected void ApplyGravity(FBBody body, GameTime gameTime)
         {
-            
+              
         }
 
         protected void MoveBodies(GameTime gameTime)

@@ -13,12 +13,18 @@ namespace FlipbookPhysics.V2
         public float BMinimumValue;
         public float BMaximumValue;
 
-        public float IntervalDistance()
+        public float IntervalDistance(out float seperation)
         {
             if (AMinimumValue < BMinimumValue)
+            {
+                seperation = BMinimumValue - AMaximumValue;
                 return BMinimumValue - AMaximumValue;
+            }
             else
+            {
+                seperation = BMaximumValue - AMinimumValue;
                 return AMinimumValue - BMaximumValue;
+            }
         }
     }
 }
